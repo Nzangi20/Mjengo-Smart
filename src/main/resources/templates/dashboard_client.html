@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/base :: head(${title})}"></head>
+
+<body class="bg-gray-50 flex h-screen overflow-hidden text-gray-800">
+    <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+    <div class="flex-1 flex flex-col relative w-full h-full">
+        <div th:replace="~{fragments/navbar :: navbar}"></div>
+        <main class="flex-1 overflow-y-auto p-6 lg:p-8">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+                <div>
+                    <h1 class="text-2xl font-bold text-gray-900">Welcome, <span
+                            th:text="${session.userName}">Client</span>!</h1>
+                    <p class="text-sm text-gray-500 mt-1">Client Dashboard — initiate projects, review intelligence outputs, approve key decisions, and communicate</p>
+                </div>
+            </div>
+
+            <!-- KPI Cards -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8">
+                <div class="bg-white p-5 rounded-xl border border-gray-100 shadow-sm text-center">
+                    <p class="text-sm text-gray-500">My Projects</p>
+                    <h3 class="text-3xl font-black text-gray-900 mt-1" th:text="${totalProjects}">0</h3>
+                </div>
+                <div class="bg-white p-5 rounded-xl border border-gray-100 shadow-sm text-center">
+                    <p class="text-sm text-gray-500">Total Invested</p>
+                    <h3 class="text-2xl font-black text-brand-600 mt-1"
+                        th:text="'KES ' + ${#numbers.formatDecimal(totalBudget, 1, 0)}">KES 0</h3>
+                </div>
+                <div class="bg-white p-5 rounded-xl border border-gray-100 shadow-sm text-center">
+                    <p class="text-sm text-gray-500">Amount Used</p>
+                    <h3 class="text-2xl font-black text-red-600 mt-1"
+                        th:text="'KES ' + ${#numbers.formatDecimal(totalSpent, 1, 0)}">KES 0</h3>
+                </div>
+            </div>
+
+            <!-- Initiate project -->
+            <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-6 mb-8">
+                <h2 class="text-lg font-bold text-gray-900 mb-4"><i
+                        class="fa-solid fa-plus-circle text-brand-500 mr-2"></i> Initiate a new project</h2>
+                <p class="text-sm text-gray-500 mb-4">Define type, budget, location, and requirements. You will be set as
+                    the owning client for approvals.</p>
+                <form action="/projects/add" method="POST" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <input type="text" name="name" placeholder="Project name" required
+                        class="border border-gray-300 rounded-lg px-4 py-2 text-sm">
+                    <input type="text" name="location" placeholder="Location / region" required
+                        class="border border-gray-300 rounded-lg px-4 py-2 text-sm">
+                    <select name="constructionType"
+                        class="border border-gray-300 rounded-lg px-4 py-2 text-sm bg-gray-50">
+                        <option value="RESIDENTIAL">Residential</option>
+                        <option value="COMMERCIAL">Commercial</option>
+                        <option value="INDUSTRIAL">Industrial</option>
+                        <option value="INFRASTRUCTURE">Infrastructure</option>
+                    </select>
+                    <input type="number" name="budget" placeholder="Budget (KES)" required min="0" step="1000"
+                        class="border border-gray-300 rounded-lg px-4 py-2 text-sm">
+                    <input type="text" name="manager" placeholder="Project manager name" required
+                        class="border border-gray-300 rounded-lg px-4 py-2 text-sm">
+                    <input type="date" name="startDate" required
+                        class="border border-gray-300 rounded-lg px-4 py-2 text-sm">
+                    <input type="date" name="endDate" required class="border border-gray-300 rounded-lg px-4 py-2 text-sm">
+                    <textarea name="description" placeholder="Requirements &amp; scope" rows="2"
+                        class="border border-gray-300 rounded-lg px-4 py-2 text-sm md:col-span-2"></textarea>
+                    <textarea name="requirements" placeholder="Additional requirements (optional)" rows="2"
+                        class="border border-gray-300 rounded-lg px-4 py-2 text-sm md:col-span-2"></textarea>
+                    <div class="md:col-span-2">
+                        <button type="submit"
+                            class="bg-brand-600 hover:bg-brand-700 text-white px-5 py-2 rounded-lg text-sm font-medium">Create
+                            project</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Pending approvals -->
+            <div th:if="${approvalProjects != null and !approvalProjects.isEmpty()}"
+                class="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-8 flex flex-wrap gap-4 items-center justify-between">
+                <div>
+                    <p class="text-sm font-bold text-amber-900">Pending approvals</p>
+                    <p class="text-xs text-amber-800">Review design, BoQ, and timeline for your projects.</p>
+                </div>
+                <a href="/collaboration/approvals"
+                    class="bg-amber-600 hover:bg-amber-700 text-white rounded-lg px-4 py-2 text-sm font-medium">Open
+                    approvals</a>
+            </div>
+
+            <!-- Empty State -->
+            <div th:if="${projects.isEmpty()}"
+                class="bg-white rounded-xl border-2 border-dashed border-gray-200 p-12 text-center">
+                <div class="bg-purple-50 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4"><i
+                        class="fa-solid fa-briefcase text-purple-500 text-2xl"></i></div>
+                <h3 class="text-lg font-bold text-gray-900 mb-2">No projects linked to your account yet</h3>
+                <p class="text-sm text-gray-500 mb-4">Create a project above, or ask your project manager to attach your
+                    email to an existing project.</p>
+                <div class="flex justify-center gap-3">
+                    <a href="/cost-estimation"
+                        class="bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 px-5 py-2 rounded-lg text-sm font-medium transition-colors inline-flex items-center gap-2"><i
+                            class="fa-solid fa-file-invoice-dollar"></i> Review Cost</a>
+                    <a href="/site-analysis"
+                        class="bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 px-5 py-2 rounded-lg text-sm font-medium transition-colors inline-flex items-center gap-2"><i
+                            class="fa-solid fa-magnifying-glass-chart"></i> Review Site</a>
+                </div>
+            </div>
+
+            <!-- Project Cards if data exists -->
+            <div th:if="${!projects.isEmpty()}" class="space-y-4">
+                <h2 class="text-lg font-bold text-gray-900"><i
+                        class="fa-solid fa-building text-purple-500 mr-2"></i>Your Projects</h2>
+                <div th:each="p : ${projects}" class="bg-white rounded-xl border border-gray-100 shadow-sm p-6">
+                    <div class="flex justify-between items-start mb-3">
+                        <div>
+                            <h3 class="font-bold text-gray-900" th:text="${p.name}"></h3>
+                            <p class="text-xs text-gray-500" th:text="${p.location}"></p>
+                        </div>
+                        <span th:if="${p.status == 'ON_TRACK'}"
+                            class="bg-emerald-100 text-emerald-700 text-[10px] px-2 py-0.5 rounded font-bold">On
+                            Track</span>
+                        <span th:if="${p.status == 'DELAYED'}"
+                            class="bg-red-100 text-red-700 text-[10px] px-2 py-0.5 rounded font-bold">Delayed</span>
+                        <span th:if="${p.status == 'AT_RISK'}"
+                            class="bg-amber-100 text-amber-700 text-[10px] px-2 py-0.5 rounded font-bold">At Risk</span>
+                    </div>
+                    <div class="w-full bg-gray-100 rounded-full h-3 overflow-hidden mb-2">
+                        <div class="h-3 rounded-full bg-gradient-to-r from-purple-500 to-purple-400"
+                            th:style="'width:' + ${p.progressPercent} + '%'"></div>
+                    </div>
+                    <div class="flex justify-between text-xs text-gray-500"><span
+                            th:text="${p.progressPercent} + '% complete'"></span><span
+                            th:text="'Budget: KES ' + ${#numbers.formatDecimal(p.budget, 1, 0)}"></span></div>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+
+</html>

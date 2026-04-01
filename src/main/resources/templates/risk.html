@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/base :: head(${title})}"></head>
+
+<body class="bg-gray-50 flex h-screen overflow-hidden text-gray-800">
+    <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+    <div class="flex-1 flex flex-col relative w-full h-full">
+        <div th:replace="~{fragments/navbar :: navbar}"></div>
+        <main class="flex-1 overflow-y-auto p-6 lg:p-8">
+            <div th:if="${success}"
+                class="mb-6 bg-emerald-50 border border-emerald-200 text-emerald-800 text-sm px-4 py-3 rounded-lg flex items-center gap-2">
+                <i class="fa-solid fa-circle-check"></i> <span th:text="${success}">OK</span></div>
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+                <div>
+                    <h1 class="text-2xl font-bold text-gray-900" th:text="${title}">Risk & Safety</h1>
+                    <p class="text-sm text-gray-500 mt-1">Report incidents, manage safety logs, and track corrective
+                        actions.</p>
+                </div>
+            </div>
+            <!-- Report Incident Form -->
+            <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-6 mb-8">
+                <h2 class="font-bold text-gray-900 mb-4"><i
+                        class="fa-solid fa-triangle-exclamation text-red-500 mr-2"></i> Report New Incident</h2>
+                <form action="/incidents/add" method="POST"
+                    class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <input type="text" name="title" placeholder="Incident Title" required
+                        class="border border-gray-300 rounded-lg px-4 py-2 text-sm focus:ring-2 focus:ring-brand-500 outline-none bg-gray-50 lg:col-span-2">
+                    <input type="date" name="date" required
+                        class="border border-gray-300 rounded-lg px-4 py-2 text-sm focus:ring-2 focus:ring-brand-500 outline-none bg-gray-50">
+                    <select name="severity"
+                        class="border border-gray-300 rounded-lg px-4 py-2 text-sm focus:ring-2 focus:ring-brand-500 outline-none bg-gray-50">
+                        <option value="MINOR">Minor</option>
+                        <option value="MODERATE">Moderate</option>
+                        <option value="MAJOR">Major</option>
+                        <option value="CRITICAL">Critical</option>
+                    </select>
+                    <select name="type"
+                        class="border border-gray-300 rounded-lg px-4 py-2 text-sm focus:ring-2 focus:ring-brand-500 outline-none bg-gray-50">
+                        <option value="NEAR_MISS">Near Miss</option>
+                        <option value="PROPERTY_DAMAGE">Property Damage</option>
+                        <option value="INJURY">Injury</option>
+                        <option value="ENVIRONMENTAL">Environmental</option>
+                    </select>
+                    <select name="project"
+                        class="border border-gray-300 rounded-lg px-4 py-2 text-sm focus:ring-2 focus:ring-brand-500 outline-none bg-gray-50">
+                        <option th:each="p : ${projects}" th:value="${p.name}" th:text="${p.name}"></option>
+                    </select>
+                    <input type="text" name="reportedBy" placeholder="Reported By" required
+                        class="border border-gray-300 rounded-lg px-4 py-2 text-sm focus:ring-2 focus:ring-brand-500 outline-none bg-gray-50">
+                    <textarea name="description" placeholder="Describe what happened..." rows="2"
+                        class="border border-gray-300 rounded-lg px-4 py-2 text-sm focus:ring-2 focus:ring-brand-500 outline-none bg-gray-50 lg:col-span-2"></textarea>
+                    <textarea name="actionTaken" placeholder="Corrective actions taken..." rows="2"
+                        class="border border-gray-300 rounded-lg px-4 py-2 text-sm focus:ring-2 focus:ring-brand-500 outline-none bg-gray-50 lg:col-span-3"></textarea>
+                    <button type="submit"
+                        class="bg-red-600 hover:bg-red-700 text-white rounded-lg px-4 py-2 text-sm font-medium transition-colors lg:col-span-3"><i
+                            class="fa-solid fa-triangle-exclamation mr-1"></i> Submit Incident Report</button>
+                </form>
+            </div>
+            <!-- Incident Log -->
+            <div class="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
+                <div class="p-6 border-b border-gray-100">
+                    <h2 class="text-lg font-bold text-gray-900">Incident Log</h2>
+                </div>
+                <div class="divide-y divide-gray-100">
+                    <div th:each="i : ${incidents}" class="p-5 hover:bg-gray-50">
+                        <div class="flex flex-col md:flex-row justify-between items-start gap-2 mb-2">
+                            <h3 class="font-bold text-gray-900" th:text="${i.title}"></h3>
+                            <div class="flex gap-2">
+                                <span th:if="${i.severity == 'MINOR'}"
+                                    class="bg-gray-100 text-gray-600 text-[10px] px-2 py-0.5 rounded font-bold">Minor</span>
+                                <span th:if="${i.severity == 'MODERATE'}"
+                                    class="bg-amber-100 text-amber-700 text-[10px] px-2 py-0.5 rounded font-bold">Moderate</span>
+                                <span th:if="${i.severity == 'MAJOR'}"
+                                    class="bg-red-100 text-red-700 text-[10px] px-2 py-0.5 rounded font-bold">Major</span>
+                                <span th:if="${i.severity == 'CRITICAL'}"
+                                    class="bg-red-600 text-white text-[10px] px-2 py-0.5 rounded font-bold">Critical</span>
+                                <span class="bg-blue-50 text-brand-700 text-[10px] px-2 py-0.5 rounded font-bold"
+                                    th:text="${i.type}"></span>
+                            </div>
+                        </div>
+                        <p class="text-sm text-gray-600 mb-2" th:text="${i.description}"></p>
+                        <p class="text-xs text-emerald-700 bg-emerald-50 inline-block px-2 py-1 rounded">
+                            <strong>Action:</strong> <span th:text="${i.actionTaken}"></span></p>
+                        <p class="text-[10px] text-gray-400 mt-2">Reported by <span th:text="${i.reportedBy}"></span> on
+                            <span th:text="${i.date}"></span> &bull; Project: <span th:text="${i.project}"></span></p>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+
+</html>

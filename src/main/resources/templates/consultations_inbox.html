@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/base :: head(${title})}"></head>
+
+<body class="bg-gray-50 flex h-screen overflow-hidden text-gray-800">
+    <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+    <div class="flex-1 flex flex-col relative w-full h-full">
+        <div th:replace="~{fragments/navbar :: navbar}"></div>
+        <main class="flex-1 overflow-y-auto p-6 lg:p-8">
+            <div class="mb-8">
+                <h1 class="text-2xl font-bold text-gray-900"><i
+                        class="fa-solid fa-inbox text-brand-500 mr-2"></i>Consultation inbox</h1>
+                <p class="text-sm text-gray-500 mt-1">Client booking requests routed by role. Follow up via Messages.</p>
+            </div>
+
+            <div th:if="${requests == null or requests.isEmpty()}"
+                class="bg-white rounded-xl border border-dashed border-gray-200 p-12 text-center text-gray-500 text-sm">
+                No consultation requests yet.
+            </div>
+
+            <div th:if="${requests != null and !requests.isEmpty()}" class="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
+                <table class="w-full text-left text-sm">
+                    <thead class="text-xs uppercase text-gray-500 border-b border-gray-200 bg-gray-50">
+                        <tr>
+                            <th class="px-6 py-3">When requested</th>
+                            <th class="px-6 py-3">Client</th>
+                            <th class="px-6 py-3">For role</th>
+                            <th class="px-6 py-3">Topic</th>
+                            <th class="px-6 py-3">Preferred slot</th>
+                            <th class="px-6 py-3">Project</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-100">
+                        <tr th:each="r : ${requests}" class="hover:bg-gray-50">
+                            <td class="px-6 py-3 text-gray-500 text-xs" th:text="${r.createdAt}"></td>
+                            <td class="px-6 py-3">
+                                <div class="font-medium text-gray-900" th:text="${r.clientName}"></div>
+                                <div class="text-xs text-gray-500" th:text="${r.clientEmail}"></div>
+                            </td>
+                            <td class="px-6 py-3 font-bold text-brand-700 text-xs" th:text="${r.consulteeRole}"></td>
+                            <td class="px-6 py-3 text-gray-800" th:text="${r.topic}"></td>
+                            <td class="px-6 py-3 text-gray-600 text-xs" th:text="${r.preferredSlot}"></td>
+                            <td class="px-6 py-3 text-gray-600 text-xs"
+                                th:text="${r.projectName != null and !r.projectName.isEmpty()} ? ${r.projectName} : '—'"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+</body>
+
+</html>

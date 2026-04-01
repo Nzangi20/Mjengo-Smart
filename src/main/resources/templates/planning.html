@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/base :: head(${title})}"></head>
+
+<body class="bg-gray-50 flex h-screen overflow-hidden text-gray-800">
+    <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+    <div class="flex-1 flex flex-col relative w-full h-full">
+        <div th:replace="~{fragments/navbar :: navbar}"></div>
+        <main class="flex-1 overflow-y-auto p-6 lg:p-8">
+
+            <!-- Upload Toasts -->
+            <div th:if="${uploadSuccess}"
+                class="mb-6 bg-emerald-50 border border-emerald-200 text-emerald-800 text-sm px-4 py-3 rounded-lg flex items-center gap-2">
+                <i class="fa-solid fa-circle-check"></i> <span th:text="${uploadSuccess}">Success</span>
+            </div>
+            <div th:if="${uploadError}"
+                class="mb-6 bg-red-50 border border-red-200 text-red-700 text-sm px-4 py-3 rounded-lg flex items-center gap-2">
+                <i class="fa-solid fa-circle-exclamation"></i> <span th:text="${uploadError}">Error</span>
+            </div>
+
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+                <div>
+                    <h1 class="text-2xl font-bold text-gray-900" th:text="${title}">Design & Planning</h1>
+                    <p class="text-sm text-gray-500 mt-1">Manage architectural files, blueprints, and revisions.</p>
+                </div>
+                <!-- Functional Upload Button triggers form below -->
+            </div>
+
+            <!-- Blueprint Upload Form -->
+            <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-6 mb-8">
+                <h2 class="text-lg font-bold text-gray-800 mb-4"><i
+                        class="fa-solid fa-cloud-arrow-up text-brand-500 mr-2"></i> Upload New Blueprint / Document</h2>
+                <form action="/upload" method="POST" enctype="multipart/form-data"
+                    class="flex flex-col md:flex-row items-center gap-4">
+                    <input type="hidden" name="module" value="planning">
+                    <input type="file" name="file"
+                        class="flex-1 text-sm text-gray-600 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-brand-50 file:text-brand-700 hover:file:bg-brand-100 cursor-pointer"
+                        required>
+                    <button type="submit"
+                        class="bg-brand-600 hover:bg-brand-700 text-white px-5 py-2 rounded-lg text-sm font-medium transition-colors shadow-sm flex items-center gap-2 whitespace-nowrap">
+                        <i class="fa-solid fa-cloud-arrow-up"></i> Upload Blueprint
+                    </button>
+                </form>
+            </div>
+
+            <!-- Blueprint Gallery -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+                <div class="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden hover-lift group">
+                    <div class="h-48 bg-gray-200 relative overflow-hidden flex items-center justify-center">
+                        <i
+                            class="fa-solid fa-pen-ruler text-4xl text-gray-400 group-hover:scale-110 transition-transform duration-300"></i>
+                        <div class="absolute inset-0 opacity-20 mix-blend-multiply"
+                            style="background-image: linear-gradient(#0284c7 1px, transparent 1px), linear-gradient(90deg, #0284c7 1px, transparent 1px); background-size: 20px 20px;">
+                        </div>
+                    </div>
+                    <div class="p-5 border-t border-gray-100">
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="font-bold text-gray-800">Ground Floor Master Plan</h3>
+                            <span
+                                class="bg-blue-100 text-brand-700 text-[10px] px-2 py-0.5 rounded font-bold uppercase tracking-wide">Arch-V4</span>
+                        </div>
+                        <p class="text-xs text-gray-500 mb-4">Uploaded by Lead Architect • 2 days ago</p>
+                        <div class="flex gap-2">
+                            <button
+                                class="flex-1 bg-gray-50 hover:bg-gray-100 text-gray-700 text-xs font-semibold py-2 rounded border border-gray-200 transition-colors">Preview</button>
+                            <button
+                                class="bg-gray-50 hover:bg-gray-100 text-gray-700 text-xs font-semibold px-3 rounded border border-gray-200 transition-colors"><i
+                                    class="fa-solid fa-download"></i></button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden hover-lift group">
+                    <div class="h-48 bg-gray-200 relative overflow-hidden flex items-center justify-center">
+                        <i
+                            class="fa-solid fa-pen-ruler text-4xl text-gray-400 group-hover:scale-110 transition-transform duration-300"></i>
+                        <div class="absolute inset-0 opacity-20 mix-blend-multiply"
+                            style="background-image: linear-gradient(#0284c7 1px, transparent 1px), linear-gradient(90deg, #0284c7 1px, transparent 1px); background-size: 20px 20px;">
+                        </div>
+                    </div>
+                    <div class="p-5 border-t border-gray-100">
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="font-bold text-gray-800">Structural Skeleton (Steel)</h3>
+                            <span
+                                class="bg-blue-100 text-brand-700 text-[10px] px-2 py-0.5 rounded font-bold uppercase tracking-wide">Eng-V2</span>
+                        </div>
+                        <p class="text-xs text-gray-500 mb-4">Uploaded by Structural Eng • 1 week ago</p>
+                        <div class="flex gap-2">
+                            <button
+                                class="flex-1 bg-gray-50 hover:bg-gray-100 text-gray-700 text-xs font-semibold py-2 rounded border border-gray-200 transition-colors">Preview</button>
+                            <button
+                                class="bg-gray-50 hover:bg-gray-100 text-gray-700 text-xs font-semibold px-3 rounded border border-gray-200 transition-colors"><i
+                                    class="fa-solid fa-download"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Version History -->
+            <div class="bg-white rounded-xl border border-gray-100 shadow-sm">
+                <div class="p-6 border-b border-gray-100 flex justify-between items-center">
+                    <h2 class="text-lg font-bold text-gray-800">Document Revision History</h2>
+                </div>
+                <table class="w-full text-left">
+                    <thead class="bg-gray-50 text-xs uppercase text-gray-500 border-b border-gray-200">
+                        <tr>
+                            <th class="px-6 py-4 font-semibold">Document Name</th>
+                            <th class="px-6 py-4 font-semibold">Version</th>
+                            <th class="px-6 py-4 font-semibold">Uploaded By</th>
+                            <th class="px-6 py-4 font-semibold">Date modified</th>
+                            <th class="px-6 py-4 font-semibold">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody class="text-sm divide-y divide-gray-100">
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-6 py-4 font-medium text-brand-600 flex items-center gap-2"><i
+                                    class="fa-regular fa-file-pdf text-red-500"></i> Ground Floor Master Plan</td>
+                            <td class="px-6 py-4">V4.0</td>
+                            <td class="px-6 py-4">John Doe</td>
+                            <td class="px-6 py-4 text-gray-500">Oct 24, 2026</td>
+                            <td class="px-6 py-4"><span
+                                    class="bg-emerald-100 text-emerald-700 text-xs px-2 py-1 rounded font-medium">Approved</span>
+                            </td>
+                        </tr>
+                        <tr class="hover:bg-gray-50 opacity-60">
+                            <td class="px-6 py-4 font-medium text-gray-600 flex items-center gap-2"><i
+                                    class="fa-regular fa-file-pdf text-red-500"></i> Ground Floor Master Plan</td>
+                            <td class="px-6 py-4">V3.1</td>
+                            <td class="px-6 py-4">John Doe</td>
+                            <td class="px-6 py-4 text-gray-500">Oct 12, 2026</td>
+                            <td class="px-6 py-4"><span
+                                    class="bg-gray-100 text-gray-600 text-xs px-2 py-1 rounded font-medium">Archived</span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-6 mt-8">
+                <h2 class="text-lg font-bold text-gray-900 mb-4"><i
+                        class="fa-solid fa-comments text-brand-500 mr-2"></i> Design discussion</h2>
+                <div class="space-y-2 mb-4 max-h-48 overflow-y-auto">
+                    <div th:each="c : ${designComments}" class="text-sm border border-gray-100 rounded-lg px-3 py-2">
+                        <span class="font-semibold" th:text="${c.authorName}"></span>
+                        <span class="text-gray-400 text-xs" th:text="${c.createdAt}"></span>
+                        <p class="text-gray-600 mt-1" th:text="${c.body}"></p>
+                    </div>
+                </div>
+                <form action="/collaboration/comments/add" method="POST" class="flex gap-2 flex-wrap">
+                    <input type="hidden" name="targetKey" value="DESIGN:GLOBAL">
+                    <input type="hidden" name="returnPath" value="/planning">
+                    <input type="text" name="body" placeholder="Comment on designs / blueprints..." required
+                        class="flex-1 min-w-[200px] border border-gray-200 rounded-lg px-3 py-2 text-sm">
+                    <button type="submit" class="bg-brand-600 text-white px-4 py-2 rounded-lg text-sm">Post</button>
+                </form>
+            </div>
+        </main>
+    </div>
+</body>
+
+</html>

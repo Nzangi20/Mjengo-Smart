@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/base :: head(${title})}"></head>
+
+<body class="bg-gray-50 flex h-screen overflow-hidden text-gray-800">
+    <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+    <div class="flex-1 flex flex-col relative w-full h-full">
+        <div th:replace="~{fragments/navbar :: navbar}"></div>
+        <main class="flex-1 overflow-y-auto p-6 lg:p-8">
+            <div th:if="${success}"
+                class="mb-6 bg-emerald-50 border border-emerald-200 text-emerald-800 text-sm px-4 py-3 rounded-lg flex items-center gap-2">
+                <i class="fa-solid fa-circle-check"></i> <span th:text="${success}">OK</span></div>
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+                <div>
+                    <h1 class="text-2xl font-bold text-gray-900" th:text="${title}">Maintenance & Assets</h1>
+                    <p class="text-sm text-gray-500 mt-1">Track equipment, service schedules, and maintenance requests.
+                    </p>
+                </div>
+            </div>
+            <!-- Equipment Registry -->
+            <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-6 mb-8">
+                <h2 class="text-lg font-bold text-gray-900 mb-4"><i class="fa-solid fa-gears text-brand-500 mr-2"></i>
+                    Equipment Registry</h2>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left">
+                        <thead class="text-xs uppercase text-gray-500 border-b border-gray-200 bg-gray-50">
+                            <tr>
+                                <th class="px-6 py-3">Equipment</th>
+                                <th class="px-6 py-3">ID</th>
+                                <th class="px-6 py-3">Assigned To</th>
+                                <th class="px-6 py-3">Last Service</th>
+                                <th class="px-6 py-3">Next Service</th>
+                                <th class="px-6 py-3 text-center">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody class="text-sm divide-y divide-gray-100">
+                            <tr class="hover:bg-gray-50">
+                                <td class="px-6 py-3 font-medium text-gray-900">Tower Crane (50T)</td>
+                                <td class="px-6 py-3 font-mono text-xs text-gray-400">EQ-001</td>
+                                <td class="px-6 py-3 text-gray-600">Nairobi Tower</td>
+                                <td class="px-6 py-3 text-gray-500">Oct 10, 2026</td>
+                                <td class="px-6 py-3 text-gray-500">Nov 10, 2026</td>
+                                <td class="px-6 py-3 text-center"><span
+                                        class="bg-emerald-100 text-emerald-700 text-[10px] px-2 py-0.5 rounded font-bold">Operational</span>
+                                </td>
+                            </tr>
+                            <tr class="hover:bg-gray-50">
+                                <td class="px-6 py-3 font-medium text-gray-900">Concrete Mixer (350L)</td>
+                                <td class="px-6 py-3 font-mono text-xs text-gray-400">EQ-002</td>
+                                <td class="px-6 py-3 text-gray-600">Nairobi Tower</td>
+                                <td class="px-6 py-3 text-gray-500">Oct 5, 2026</td>
+                                <td class="px-6 py-3 text-amber-600 font-bold">Oct 28, 2026</td>
+                                <td class="px-6 py-3 text-center"><span
+                                        class="bg-amber-100 text-amber-700 text-[10px] px-2 py-0.5 rounded font-bold">Service
+                                        Due</span></td>
+                            </tr>
+                            <tr class="hover:bg-gray-50">
+                                <td class="px-6 py-3 font-medium text-gray-900">Excavator (CAT 320)</td>
+                                <td class="px-6 py-3 font-mono text-xs text-gray-400">EQ-003</td>
+                                <td class="px-6 py-3 text-gray-600">Mombasa Port</td>
+                                <td class="px-6 py-3 text-gray-500">Sep 15, 2026</td>
+                                <td class="px-6 py-3 text-gray-500">Dec 15, 2026</td>
+                                <td class="px-6 py-3 text-center"><span
+                                        class="bg-emerald-100 text-emerald-700 text-[10px] px-2 py-0.5 rounded font-bold">Operational</span>
+                                </td>
+                            </tr>
+                            <tr class="hover:bg-gray-50 bg-red-50/30">
+                                <td class="px-6 py-3 font-medium text-gray-900">Vibrator (Poker Type)</td>
+                                <td class="px-6 py-3 font-mono text-xs text-gray-400">EQ-004</td>
+                                <td class="px-6 py-3 text-gray-600">Kisumu Highway</td>
+                                <td class="px-6 py-3 text-gray-500">Aug 20, 2026</td>
+                                <td class="px-6 py-3 text-red-600 font-bold">Oct 20, 2026</td>
+                                <td class="px-6 py-3 text-center"><span
+                                        class="bg-red-100 text-red-700 text-[10px] px-2 py-0.5 rounded font-bold">Overdue</span>
+                                </td>
+                            </tr>
+                            <tr class="hover:bg-gray-50">
+                                <td class="px-6 py-3 font-medium text-gray-900">Generator (250KVA)</td>
+                                <td class="px-6 py-3 font-mono text-xs text-gray-400">EQ-005</td>
+                                <td class="px-6 py-3 text-gray-600">Nairobi Tower</td>
+                                <td class="px-6 py-3 text-gray-500">Oct 20, 2026</td>
+                                <td class="px-6 py-3 text-gray-500">Jan 20, 2027</td>
+                                <td class="px-6 py-3 text-center"><span
+                                        class="bg-emerald-100 text-emerald-700 text-[10px] px-2 py-0.5 rounded font-bold">Operational</span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <!-- Maintenance Upload -->
+            <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-6">
+                <h2 class="font-bold text-gray-900 mb-4"><i class="fa-solid fa-cloud-arrow-up text-brand-500 mr-2"></i>
+                    Upload Service/Repair Documentation</h2>
+                <form action="/upload" method="POST" enctype="multipart/form-data"
+                    class="flex flex-col md:flex-row items-center gap-4">
+                    <input type="hidden" name="module" value="maintenance">
+                    <input type="file" name="file"
+                        class="flex-1 text-sm text-gray-600 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-brand-50 file:text-brand-700 hover:file:bg-brand-100 cursor-pointer"
+                        required>
+                    <button type="submit"
+                        class="bg-brand-600 hover:bg-brand-700 text-white px-5 py-2 rounded-lg text-sm font-medium transition-colors shadow-sm"><i
+                            class="fa-solid fa-cloud-arrow-up mr-1"></i> Upload</button>
+                </form>
+            </div>
+        </main>
+    </div>
+</body>
+
+</html>

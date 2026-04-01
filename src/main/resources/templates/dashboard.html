@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/base :: head(${title})}"></head>
+
+<body class="bg-gray-50 flex h-screen overflow-hidden text-gray-800">
+
+    <!-- Sidebar -->
+    <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+
+    <div class="flex-1 flex flex-col relative w-full h-full">
+        <!-- Navbar -->
+        <div th:replace="~{fragments/navbar :: navbar}"></div>
+
+        <!-- Main Content -->
+        <main class="flex-1 overflow-y-auto p-6 lg:p-8">
+
+            <!-- Success Toast -->
+            <div th:if="${success}"
+                class="mb-6 bg-emerald-50 border border-emerald-200 text-emerald-800 text-sm px-4 py-3 rounded-lg flex items-center gap-2">
+                <i class="fa-solid fa-circle-check"></i>
+                <span th:text="${success}">Success</span>
+            </div>
+
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+                <div>
+                    <h1 class="text-2xl font-bold text-gray-900">Dashboard Overview</h1>
+                    <p class="text-sm text-gray-500 mt-1">Welcome back, <span class="font-semibold text-brand-600"
+                            th:text="${session.userName}">User</span>. Here is the real-time project snapshot.</p>
+                </div>
+                <button th:if="${session.userRole == 'ADMIN'}"
+                    class="bg-white border border-gray-200 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-50 transition-colors shadow-sm flex items-center gap-2 hover-lift">
+                    <i class="fa-solid fa-cloud-arrow-down"></i> Generate Report
+                </button>
+            </div>
+
+            <!-- Summary KPI Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                <!-- Card 1 -->
+                <div
+                    class="bg-white p-6 rounded-xl border border-gray-100 shadow-sm hover-lift relative overflow-hidden group">
+                    <div
+                        class="absolute top-0 right-0 w-24 h-24 bg-brand-50 rounded-full -mr-12 -mt-12 opacity-50 transition-transform group-hover:scale-110">
+                    </div>
+                    <div class="flex justify-between items-start mb-4">
+                        <div>
+                            <p class="text-sm font-medium text-gray-500 mb-1">Total Projects</p>
+                            <h3 class="text-3xl font-bold text-gray-800">24</h3>
+                        </div>
+                        <div class="p-3 bg-brand-50 text-brand-600 rounded-lg">
+                            <i class="fa-solid fa-city text-xl w-6 text-center"></i>
+                        </div>
+                    </div>
+                    <div class="flex items-center text-sm">
+                        <span class="text-emerald-500 font-medium flex items-center gap-1"><i
+                                class="fa-solid fa-arrow-up text-xs"></i> 12%</span>
+                        <span class="text-gray-400 ml-2">from last month</span>
+                    </div>
+                </div>
+
+                <!-- Card 2 -->
+                <div
+                    class="bg-white p-6 rounded-xl border border-gray-100 shadow-sm hover-lift relative overflow-hidden group">
+                    <div
+                        class="absolute top-0 right-0 w-24 h-24 bg-accent-50 rounded-full -mr-12 -mt-12 opacity-50 transition-transform group-hover:scale-110">
+                    </div>
+                    <div class="flex justify-between items-start mb-4">
+                        <div>
+                            <p class="text-sm font-medium text-gray-500 mb-1">Active Projects</p>
+                            <h3 class="text-3xl font-bold text-gray-800">8</h3>
+                        </div>
+                        <div class="p-3 bg-accent-50 text-accent-600 rounded-lg">
+                            <i class="fa-solid fa-person-digging text-xl w-6 text-center"></i>
+                        </div>
+                    </div>
+                    <div class="flex items-center text-sm">
+                        <span class="text-emerald-500 font-medium flex items-center gap-1"><i
+                                class="fa-solid fa-arrow-up text-xs"></i> 2 new</span>
+                        <span class="text-gray-400 ml-2">this week</span>
+                    </div>
+                </div>
+
+                <!-- Card 3: Budget Usage (Admin & Engineer only) -->
+                <div th:if="${session.userRole != 'CLIENT'}"
+                    class="bg-white p-6 rounded-xl border border-gray-100 shadow-sm hover-lift relative overflow-hidden group">
+                    <div
+                        class="absolute top-0 right-0 w-24 h-24 bg-red-50 rounded-full -mr-12 -mt-12 opacity-50 transition-transform group-hover:scale-110">
+                    </div>
+                    <div class="flex justify-between items-start mb-4">
+                        <div>
+                            <p class="text-sm font-medium text-gray-500 mb-1">Budget Usage</p>
+                            <h3 class="text-3xl font-bold text-gray-800">68%</h3>
+                        </div>
+                        <div class="p-3 bg-red-50 text-red-600 rounded-lg">
+                            <i class="fa-solid fa-sack-dollar text-xl w-6 text-center"></i>
+                        </div>
+                    </div>
+                    <div class="w-full bg-gray-100 rounded-full h-1.5 mt-2 overflow-hidden">
+                        <div class="bg-brand-500 h-1.5 rounded-full" style="width: 68%"></div>
+                    </div>
+                </div>
+
+                <!-- Card 4 -->
+                <div
+                    class="bg-white p-6 rounded-xl border border-gray-100 shadow-sm hover-lift relative overflow-hidden group">
+                    <div
+                        class="absolute top-0 right-0 w-24 h-24 bg-emerald-50 rounded-full -mr-12 -mt-12 opacity-50 transition-transform group-hover:scale-110">
+                    </div>
+                    <div class="flex justify-between items-start mb-4">
+                        <div>
+                            <p class="text-sm font-medium text-gray-500 mb-1">Avg Completion</p>
+                            <h3 class="text-3xl font-bold text-gray-800">42%</h3>
+                        </div>
+                        <div class="p-3 bg-emerald-50 text-emerald-600 rounded-lg">
+                            <i class="fa-solid fa-spinner text-xl w-6 text-center"></i>
+                        </div>
+                    </div>
+                    <div class="w-full bg-gray-100 rounded-full h-1.5 mt-2 overflow-hidden">
+                        <div class="bg-emerald-500 h-1.5 rounded-full" style="width: 42%"></div>
+                    </div>
+                </div>
+
+                <!-- Client: Visible Budget Card (simplified) -->
+                <div th:if="${session.userRole == 'CLIENT'}"
+                    class="bg-white p-6 rounded-xl border border-gray-100 shadow-sm hover-lift relative overflow-hidden group">
+                    <div class="flex justify-between items-start mb-4">
+                        <div>
+                            <p class="text-sm font-medium text-gray-500 mb-1">Your Active Contracts</p>
+                            <h3 class="text-3xl font-bold text-gray-800">3</h3>
+                        </div>
+                        <div class="p-3 bg-blue-50 text-brand-600 rounded-lg">
+                            <i class="fa-solid fa-file-contract text-xl w-6 text-center"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
+
+                <!-- Main Project Panel -->
+                <div class="xl:col-span-2 bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-lg font-bold text-gray-900">Project Timelines & Cost Status</h2>
+                        <a href="/scheduling" class="text-sm text-brand-600 hover:text-brand-800 font-medium">View
+                            All</a>
+                    </div>
+
+                    <div class="space-y-6">
+                        <!-- Project item 1 -->
+                        <div>
+                            <div class="flex justify-between items-center mb-2">
+                                <div>
+                                    <span class="font-semibold text-gray-800">Nairobi Commercial Tower</span>
+                                    <span class="text-xs text-gray-400 ml-2">ID: PRJ-102</span>
+                                </div>
+                                <span
+                                    class="bg-emerald-100 text-emerald-700 text-xs px-2.5 py-1 rounded-md font-medium">On
+                                    Track</span>
+                            </div>
+                            <div class="grid grid-cols-12 gap-4 items-center mb-1">
+                                <div
+                                    class="col-span-12 sm:col-span-10 w-full bg-gray-100 rounded-full h-3 overflow-hidden">
+                                    <div class="bg-brand-500 h-3 rounded-full relative" style="width: 75%">
+                                        <div
+                                            class="absolute right-0 top-0 bottom-0 w-8 bg-black opacity-10 rounded-full">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-span-12 sm:col-span-2 text-right text-sm font-bold text-gray-700">75%
+                                </div>
+                            </div>
+                            <p th:if="${session.userRole != 'CLIENT'}" class="text-xs text-gray-500 tracking-wide mt-1">
+                                Cost vs Budget: <span class="text-red-500 font-medium">$4.2M / $5.0M</span></p>
+                        </div>
+
+                        <!-- Project item 2 -->
+                        <div class="pt-4 border-t border-gray-50">
+                            <div class="flex justify-between items-center mb-2">
+                                <div>
+                                    <span class="font-semibold text-gray-800">Mombasa Port Extension</span>
+                                    <span class="text-xs text-gray-400 ml-2">ID: PRJ-088</span>
+                                </div>
+                                <span
+                                    class="bg-red-100 text-red-700 text-xs px-2.5 py-1 rounded-md font-medium">Delayed</span>
+                            </div>
+                            <div class="grid grid-cols-12 gap-4 items-center mb-1">
+                                <div
+                                    class="col-span-12 sm:col-span-10 w-full bg-gray-100 rounded-full h-3 overflow-hidden">
+                                    <div class="bg-accent-500 h-3 rounded-full relative" style="width: 30%"></div>
+                                </div>
+                                <div class="col-span-12 sm:col-span-2 text-right text-sm font-bold text-gray-700">30%
+                                </div>
+                            </div>
+                            <p th:if="${session.userRole != 'CLIENT'}" class="text-xs text-gray-500 tracking-wide mt-1">
+                                Cost vs Budget: <span class="text-emerald-500 font-medium">$1.1M / $8.0M</span></p>
+                        </div>
+
+                        <!-- Project item 3 -->
+                        <div class="pt-4 border-t border-gray-50">
+                            <div class="flex justify-between items-center mb-2">
+                                <div>
+                                    <span class="font-semibold text-gray-800">Kisumu Highway Phase II</span>
+                                    <span class="text-xs text-gray-400 ml-2">ID: PRJ-115</span>
+                                </div>
+                                <span class="bg-amber-100 text-amber-700 text-xs px-2.5 py-1 rounded-md font-medium">At
+                                    Risk</span>
+                            </div>
+                            <div class="grid grid-cols-12 gap-4 items-center mb-1">
+                                <div
+                                    class="col-span-12 sm:col-span-10 w-full bg-gray-100 rounded-full h-3 overflow-hidden">
+                                    <div class="bg-amber-500 h-3 rounded-full relative" style="width: 55%"></div>
+                                </div>
+                                <div class="col-span-12 sm:col-span-2 text-right text-sm font-bold text-gray-700">55%
+                                </div>
+                            </div>
+                            <p th:if="${session.userRole != 'CLIENT'}" class="text-xs text-gray-500 tracking-wide mt-1">
+                                Cost vs Budget: <span class="text-amber-600 font-medium">$2.9M / $3.1M (Approaching
+                                    limit)</span></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Secondary Panel (Alerts & Activity) -->
+                <div class="bg-white p-6 rounded-xl border border-gray-100 shadow-sm flex flex-col h-full">
+                    <h2 class="text-lg font-bold text-gray-900 mb-6">Critical Alerts & Activity</h2>
+
+                    <div class="flex-1 overflow-y-auto space-y-4 pr-2">
+                        <!-- Alert Item (Admin & Engineer only) -->
+                        <div th:if="${session.userRole != 'CLIENT'}"
+                            class="flex gap-4 p-3 rounded-lg bg-red-50 border border-red-100 items-start">
+                            <div class="bg-white text-red-500 p-2 rounded-full shadow-sm mt-1 flex-shrink-0">
+                                <i class="fa-solid fa-triangle-exclamation text-sm"></i>
+                            </div>
+                            <div>
+                                <h4 class="text-sm font-bold text-red-800">Materials Shortage</h4>
+                                <p class="text-xs text-red-600 mt-1">Steel reinforcement stock critically low at Mombasa
+                                    Site.</p>
+                                <span
+                                    class="text-[10px] text-red-400 font-semibold mt-2 block uppercase tracking-wider">2
+                                    hrs ago</span>
+                            </div>
+                        </div>
+
+                        <!-- Activity Item -->
+                        <div
+                            class="flex gap-4 p-3 rounded-lg hover:bg-gray-50 items-start border border-transparent transition-colors">
+                            <div class="bg-brand-50 text-brand-600 p-2 rounded-full mt-1 flex-shrink-0">
+                                <i class="fa-solid fa-file-signature text-sm"></i>
+                            </div>
+                            <div>
+                                <h4 class="text-sm font-bold text-gray-800">Permit Approved</h4>
+                                <p class="text-xs text-gray-500 mt-1">Environmental clearance secured for Kisumu Highway
+                                    Phase II.</p>
+                                <span
+                                    class="text-[10px] text-gray-400 font-semibold mt-2 block uppercase tracking-wider">5
+                                    hrs ago</span>
+                            </div>
+                        </div>
+
+                        <!-- Activity Item -->
+                        <div
+                            class="flex gap-4 p-3 rounded-lg hover:bg-gray-50 items-start border border-transparent transition-colors">
+                            <div class="bg-emerald-50 text-emerald-600 p-2 rounded-full mt-1 flex-shrink-0">
+                                <i class="fa-solid fa-check-double text-sm"></i>
+                            </div>
+                            <div>
+                                <h4 class="text-sm font-bold text-gray-800">Milestone Reached</h4>
+                                <p class="text-xs text-gray-500 mt-1">Foundation poured completely for Nairobi
+                                    Commercial Tower.</p>
+                                <span
+                                    class="text-[10px] text-gray-400 font-semibold mt-2 block uppercase tracking-wider">Yesterday</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+</body>
+
+</html>

@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<body>
+    <div th:fragment="navbar"
+        class="h-16 bg-white border-b border-gray-200 shadow-sm flex items-center justify-between px-6 z-10 w-full flex-shrink-0">
+        <!-- Search Bar -->
+        <div class="flex-1 max-w-lg">
+            <form action="#" method="GET" class="relative">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <i class="fa-solid fa-magnifying-glass text-gray-400 text-sm"></i>
+                </div>
+                <input type="text" name="search"
+                    class="block w-full pl-10 pr-3 py-2 border border-gray-200 rounded-lg leading-5 bg-gray-50 placeholder-gray-400 focus:outline-none focus:bg-white focus:ring-2 focus:ring-brand-500 focus:border-brand-500 sm:text-sm transition-colors"
+                    placeholder="Search projects, materials, workers...">
+            </form>
+        </div>
+
+        <!-- Right side actions -->
+        <div class="flex items-center gap-5 ml-4">
+
+            <!-- Role Badge -->
+            <span th:if="${session.userRole == 'ADMIN'}"
+                class="hidden md:inline-block bg-red-100 text-red-700 text-[10px] px-3 py-1 rounded-full font-bold uppercase tracking-wider"><i
+                    class="fa-solid fa-shield-halved mr-1"></i>Administrator</span>
+            <span th:if="${session.userRole == 'PROJECT_MANAGER'}"
+                class="hidden md:inline-block bg-indigo-100 text-indigo-700 text-[10px] px-3 py-1 rounded-full font-bold uppercase tracking-wider"><i
+                    class="fa-solid fa-clipboard-user mr-1"></i>Project Manager</span>
+            <span th:if="${session.userRole == 'ENGINEER'}"
+                class="hidden md:inline-block bg-orange-100 text-orange-700 text-[10px] px-3 py-1 rounded-full font-bold uppercase tracking-wider"><i
+                    class="fa-solid fa-helmet-safety mr-1"></i>Engineer</span>
+            <span th:if="${session.userRole == 'CONTRACTOR'}"
+                class="hidden md:inline-block bg-emerald-100 text-emerald-700 text-[10px] px-3 py-1 rounded-full font-bold uppercase tracking-wider"><i
+                    class="fa-solid fa-person-digging mr-1"></i>Contractor</span>
+            <span th:if="${session.userRole == 'CLIENT'}"
+                class="hidden md:inline-block bg-purple-100 text-purple-700 text-[10px] px-3 py-1 rounded-full font-bold uppercase tracking-wider"><i
+                    class="fa-solid fa-briefcase mr-1"></i>Client</span>
+
+            <!-- Admin/PM: New Project -->
+            <button th:if="${session.userRole == 'ADMIN' or session.userRole == 'PROJECT_MANAGER'}"
+                class="hidden md:flex items-center gap-2 bg-brand-600 hover:bg-brand-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors shadow-sm">
+                <i class="fa-solid fa-plus"></i> New Project
+            </button>
+
+            <!-- Notification Bell -->
+            <div
+                class="relative group cursor-pointer inline-block text-gray-500 hover:text-brand-600 transition-colors">
+                <div class="relative p-2">
+                    <i class="fa-regular fa-bell text-xl"></i>
+                    <span th:if="${unreadCount != null and unreadCount > 0}"
+                        class="absolute top-0.5 right-0.5 h-4 w-4 rounded-full bg-accent-500 border-2 border-white text-white text-[9px] flex items-center justify-center font-bold"
+                        th:text="${unreadCount > 9 ? '9+' : unreadCount}">0</span>
+                    <span th:if="${unreadCount == null or unreadCount == 0}"
+                        class="absolute top-1 right-1 h-2 w-2 rounded-full bg-gray-300 border border-white"></span>
+                </div>
+                <div
+                    class="absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-xl border border-gray-100 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 transform origin-top-right">
+                    <div
+                        class="px-4 py-3 border-b border-gray-50 font-semibold text-sm text-gray-800 flex justify-between">
+                        Notifications
+                        <span th:if="${unreadCount != null and unreadCount > 0}"
+                            class="bg-brand-100 text-brand-700 text-xs px-2 py-0.5 rounded-full"
+                            th:text="${unreadCount} + ' New'">0 New</span>
+                    </div>
+                    <div class="max-h-64 overflow-y-auto">
+                        <div th:if="${recentNotifications != null}" th:each="n : ${recentNotifications}">
+                            <a th:href="${n.link != null ? n.link : '#'}"
+                                class="block px-4 py-3 hover:bg-gray-50 border-b border-gray-50">
+                                <div class="flex items-start gap-3">
+                                    <div th:classappend="${n.type == 'ALERT' ? 'bg-red-100 text-red-600' : (n.type == 'MESSAGE' ? 'bg-brand-100 text-brand-600' : 'bg-accent-100 text-accent-600')}"
+                                        class="p-2 rounded-full flex-shrink-0">
+                                        <i th:classappend="${n.type == 'ALERT' ? 'fa-solid fa-triangle-exclamation' : (n.type == 'MESSAGE' ? 'fa-solid fa-envelope' : 'fa-solid fa-bell')}"
+                                            class="text-xs"></i>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm text-gray-800 font-medium" th:text="${n.message}">
+                                            Notification</p>
+                                        <p class="text-xs text-gray-500 mt-1" th:text="${n.timestamp}">Time</p>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                        <div th:if="${recentNotifications == null or recentNotifications.isEmpty()}"
+                            class="px-4 py-6 text-center text-gray-400 text-sm">
+                            <i class="fa-regular fa-bell-slash text-lg mb-2 block"></i>
+                            No notifications yet
+                        </div>
+                    </div>
+                    <div class="px-4 py-2 border-t border-gray-50 text-center">
+                        <a href="/messages" class="text-xs text-brand-600 font-medium hover:text-brand-800">View All
+                            Messages</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Profile Dropdown -->
+            <div class="relative group cursor-pointer border-l border-gray-200 pl-5">
+                <div class="flex items-center gap-3">
+                    <img th:src="'https://ui-avatars.com/api/?name=' + ${session.userName != null ? session.userName : 'Guest'} + '&background=0284c7&color=fff'"
+                        alt="Profile" class="h-8 w-8 rounded-full border border-gray-200 object-cover shadow-sm">
+                    <div class="hidden md:block text-left">
+                        <p class="text-sm font-semibold text-gray-700 leading-none"
+                            th:text="${session.userName != null ? session.userName : 'Guest'}">Guest</p>
+                        <p class="text-xs text-gray-500 mt-1"
+                            th:text="${session.userRole != null ? session.userRole : 'No Role'}">Role</p>
+                    </div>
+                    <i class="fa-solid fa-chevron-down text-xs text-gray-400"></i>
+                </div>
+                <div
+                    class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl border border-gray-100 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                    <div class="py-1">
+                        <a href="#"
+                            class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-brand-600"><i
+                                class="fa-regular fa-user mr-2"></i> My Profile</a>
+                        <a href="#"
+                            class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-brand-600"><i
+                                class="fa-solid fa-gear mr-2"></i> Settings</a>
+                        <div class="border-t border-gray-100 my-1"></div>
+                        <a href="/logout" class="block px-4 py-2 text-sm text-red-600 hover:bg-gray-50"><i
+                                class="fa-solid fa-arrow-right-from-bracket mr-2"></i> Logout</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

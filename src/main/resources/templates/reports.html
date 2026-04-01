@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/base :: head(${title})}"></head>
+
+<body class="bg-gray-50 flex h-screen overflow-hidden text-gray-800">
+    <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+    <div class="flex-1 flex flex-col relative w-full h-full">
+        <div th:replace="~{fragments/navbar :: navbar}"></div>
+        <main class="flex-1 overflow-y-auto p-6 lg:p-8">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+                <div>
+                    <h1 class="text-2xl font-bold text-gray-900" th:text="${title}">Reports & Analytics</h1>
+                    <p class="text-sm text-gray-500 mt-1">Project performance, cost analysis, and workforce insights.
+                    </p>
+                </div>
+            </div>
+            <!-- Summary KPIs -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                <div class="bg-white p-5 rounded-xl border border-gray-100 shadow-sm text-center">
+                    <p class="text-sm text-gray-500">Total Projects</p>
+                    <h3 class="text-3xl font-black text-gray-900" th:text="${projects.size()}">0</h3>
+                </div>
+                <div class="bg-white p-5 rounded-xl border border-gray-100 shadow-sm text-center">
+                    <p class="text-sm text-gray-500">Total Budget</p>
+                    <h3 class="text-2xl font-black text-gray-900"
+                        th:text="'$' + ${#numbers.formatDecimal(totalBudget / 1000000, 1, 1)} + 'M'">0</h3>
+                </div>
+                <div class="bg-white p-5 rounded-xl border border-gray-100 shadow-sm text-center">
+                    <p class="text-sm text-gray-500">Total Spent</p>
+                    <h3 class="text-2xl font-black text-red-600"
+                        th:text="'$' + ${#numbers.formatDecimal(totalSpent / 1000000, 1, 1)} + 'M'">0</h3>
+                </div>
+                <div class="bg-white p-5 rounded-xl border border-gray-100 shadow-sm text-center">
+                    <p class="text-sm text-gray-500">Total Workforce</p>
+                    <h3 class="text-3xl font-black text-gray-900" th:text="${workers.size()}">0</h3>
+                </div>
+            </div>
+            <!-- Project Report Cards -->
+            <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-6 mb-8">
+                <h2 class="text-lg font-bold text-gray-900 mb-4"><i
+                        class="fa-solid fa-chart-bar text-brand-500 mr-2"></i> Project Progress Report</h2>
+                <div class="space-y-4">
+                    <div th:each="p : ${projects}" class="p-4 border border-gray-100 rounded-lg">
+                        <div class="flex justify-between items-center mb-2">
+                            <h3 class="font-bold text-gray-800" th:text="${p.name}"></h3>
+                            <div class="flex items-center gap-2">
+                                <span class="text-sm font-black" th:text="${p.progressPercent} + '%'"></span>
+                                <span th:text="${p.status}" class="text-[10px] px-2 py-0.5 rounded font-bold"
+                                    th:classappend="${p.status == 'ON_TRACK' ? 'bg-emerald-100 text-emerald-700' : (p.status == 'DELAYED' ? 'bg-red-100 text-red-700' : 'bg-amber-100 text-amber-700')}"></span>
+                            </div>
+                        </div>
+                        <div class="w-full bg-gray-100 rounded-full h-3 overflow-hidden mb-2">
+                            <div class="h-3 rounded-full bg-gradient-to-r from-brand-500 to-brand-400"
+                                th:style="'width:' + ${p.progressPercent} + '%'"></div>
+                        </div>
+                        <div class="grid grid-cols-4 gap-4 text-xs text-gray-500">
+                            <div>PM: <span class="font-bold text-gray-700" th:text="${p.projectManager}"></span></div>
+                            <div>Location: <span class="font-bold text-gray-700" th:text="${p.location}"></span></div>
+                            <div>Budget: <span class="font-bold text-gray-700"
+                                    th:text="'$' + ${#numbers.formatDecimal(p.budget / 1000000, 1, 1)} + 'M'"></span>
+                            </div>
+                            <div>Spent: <span class="font-bold"
+                                    th:classappend="${p.spent / p.budget > 0.8 ? 'text-red-600' : 'text-emerald-600'}"
+                                    th:text="'$' + ${#numbers.formatDecimal(p.spent / 1000000, 1, 1)} + 'M'"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Safety Summary -->
+            <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-6">
+                <h2 class="text-lg font-bold text-gray-900 mb-4"><i
+                        class="fa-solid fa-shield-halved text-red-500 mr-2"></i> Safety Incident Summary</h2>
+                <div class="divide-y divide-gray-100">
+                    <div th:each="i : ${incidents}" class="py-3 flex justify-between items-center">
+                        <div>
+                            <p class="text-sm font-bold text-gray-900" th:text="${i.title}"></p>
+                            <p class="text-xs text-gray-500" th:text="${i.project} + ' — ' + ${i.date}"></p>
+                        </div>
+                        <span th:if="${i.severity == 'MINOR'}"
+                            class="bg-gray-100 text-gray-600 text-[10px] px-2 py-0.5 rounded font-bold">Minor</span>
+                        <span th:if="${i.severity == 'MODERATE'}"
+                            class="bg-amber-100 text-amber-700 text-[10px] px-2 py-0.5 rounded font-bold">Moderate</span>
+                        <span th:if="${i.severity == 'MAJOR'}"
+                            class="bg-red-100 text-red-700 text-[10px] px-2 py-0.5 rounded font-bold">Major</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-6 mt-8">
+                <h2 class="text-lg font-bold text-gray-900 mb-4"><i
+                        class="fa-solid fa-comments text-brand-500 mr-2"></i> Report discussion</h2>
+                <div class="space-y-2 mb-4 max-h-48 overflow-y-auto">
+                    <div th:each="c : ${reportComments}" class="text-sm border border-gray-100 rounded-lg px-3 py-2">
+                        <span class="font-semibold" th:text="${c.authorName}"></span>
+                        <span class="text-gray-400 text-xs" th:text="${c.createdAt}"></span>
+                        <p class="text-gray-600 mt-1" th:text="${c.body}"></p>
+                    </div>
+                </div>
+                <form action="/collaboration/comments/add" method="POST" class="flex gap-2 flex-wrap">
+                    <input type="hidden" name="targetKey" value="REPORT:GLOBAL">
+                    <input type="hidden" name="returnPath" value="/reports">
+                    <input type="text" name="body" placeholder="Comment on reports..." required
+                        class="flex-1 min-w-[200px] border border-gray-200 rounded-lg px-3 py-2 text-sm">
+                    <button type="submit" class="bg-brand-600 text-white px-4 py-2 rounded-lg text-sm">Post</button>
+                </form>
+            </div>
+        </main>
+    </div>
+</body>
+
+</html>

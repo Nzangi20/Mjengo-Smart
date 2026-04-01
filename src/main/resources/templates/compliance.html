@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/base :: head(${title})}"></head>
+
+<body class="bg-gray-50 flex h-screen overflow-hidden text-gray-800">
+    <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+    <div class="flex-1 flex flex-col relative w-full h-full">
+        <div th:replace="~{fragments/navbar :: navbar}"></div>
+        <main class="flex-1 overflow-y-auto p-6 lg:p-8">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+                <div>
+                    <h1 class="text-2xl font-bold text-gray-900" th:text="${title}">Compliance & Permits</h1>
+                    <p class="text-sm text-gray-500 mt-1">Track government permits, certifications, and regulatory
+                        compliance.</p>
+                </div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 mb-8">
+                <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-6 hover-lift">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="p-3 bg-emerald-50 text-emerald-600 rounded-lg"><i
+                                class="fa-solid fa-file-circle-check text-xl"></i></div>
+                        <div>
+                            <h3 class="font-bold text-gray-900">Environmental Impact Assessment</h3>
+                            <p class="text-xs text-gray-400">NEMA Certificate</p>
+                        </div>
+                    </div>
+                    <div class="flex justify-between items-center"><span
+                            class="bg-emerald-100 text-emerald-700 text-xs px-2 py-0.5 rounded font-bold">Active</span><span
+                            class="text-xs text-gray-500">Exp: Dec 2027</span></div>
+                </div>
+                <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-6 hover-lift">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="p-3 bg-red-50 text-red-600 rounded-lg"><i
+                                class="fa-solid fa-file-circle-exclamation text-xl"></i></div>
+                        <div>
+                            <h3 class="font-bold text-gray-900">Hoarding License</h3>
+                            <p class="text-xs text-gray-400">Nairobi County</p>
+                        </div>
+                    </div>
+                    <div class="flex justify-between items-center"><span
+                            class="bg-red-100 text-red-700 text-xs px-2 py-0.5 rounded font-bold">Expired</span><span
+                            class="text-xs text-red-500 font-bold">Exp: Oct 5, 2026</span></div>
+                </div>
+                <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-6 hover-lift">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="p-3 bg-amber-50 text-amber-600 rounded-lg"><i
+                                class="fa-solid fa-hard-hat text-xl"></i></div>
+                        <div>
+                            <h3 class="font-bold text-gray-900">Occupational Safety Permit</h3>
+                            <p class="text-xs text-gray-400">DOSH Clearance</p>
+                        </div>
+                    </div>
+                    <div class="flex justify-between items-center"><span
+                            class="bg-amber-100 text-amber-700 text-xs px-2 py-0.5 rounded font-bold">Pending
+                            Renewal</span><span class="text-xs text-gray-500">Exp: Nov 2026</span></div>
+                </div>
+                <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-6 hover-lift">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="p-3 bg-emerald-50 text-emerald-600 rounded-lg"><i
+                                class="fa-solid fa-file-shield text-xl"></i></div>
+                        <div>
+                            <h3 class="font-bold text-gray-900">Building Plan Approval</h3>
+                            <p class="text-xs text-gray-400">NCA Approval</p>
+                        </div>
+                    </div>
+                    <div class="flex justify-between items-center"><span
+                            class="bg-emerald-100 text-emerald-700 text-xs px-2 py-0.5 rounded font-bold">Active</span><span
+                            class="text-xs text-gray-500">Granted: Jan 2025</span></div>
+                </div>
+                <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-6 hover-lift">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="p-3 bg-emerald-50 text-emerald-600 rounded-lg"><i
+                                class="fa-solid fa-water text-xl"></i></div>
+                        <div>
+                            <h3 class="font-bold text-gray-900">Water Extraction Permit</h3>
+                            <p class="text-xs text-gray-400">WRA License</p>
+                        </div>
+                    </div>
+                    <div class="flex justify-between items-center"><span
+                            class="bg-emerald-100 text-emerald-700 text-xs px-2 py-0.5 rounded font-bold">Active</span><span
+                            class="text-xs text-gray-500">Exp: Aug 2027</span></div>
+                </div>
+                <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-6 hover-lift">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="p-3 bg-brand-50 text-brand-600 rounded-lg"><i class="fa-solid fa-plug text-xl"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-gray-900">Power Connection Approval</h3>
+                            <p class="text-xs text-gray-400">KPLC Application</p>
+                        </div>
+                    </div>
+                    <div class="flex justify-between items-center"><span
+                            class="bg-blue-100 text-brand-700 text-xs px-2 py-0.5 rounded font-bold">In
+                            Progress</span><span class="text-xs text-gray-500">Applied: Sep 2026</span></div>
+                </div>
+            </div>
+            <!-- Upload Section -->
+            <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-6">
+                <h2 class="font-bold text-gray-900 mb-4"><i class="fa-solid fa-cloud-arrow-up text-brand-500 mr-2"></i>
+                    Upload Permit or Certificate</h2>
+                <form action="/upload" method="POST" enctype="multipart/form-data"
+                    class="flex flex-col md:flex-row items-center gap-4">
+                    <input type="hidden" name="module" value="compliance">
+                    <input type="file" name="file"
+                        class="flex-1 text-sm text-gray-600 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-brand-50 file:text-brand-700 hover:file:bg-brand-100 cursor-pointer"
+                        required>
+                    <button type="submit"
+                        class="bg-brand-600 hover:bg-brand-700 text-white px-5 py-2 rounded-lg text-sm font-medium transition-colors shadow-sm"><i
+                            class="fa-solid fa-cloud-arrow-up mr-1"></i> Upload</button>
+                </form>
+            </div>
+        </main>
+    </div>
+</body>
+
+</html>

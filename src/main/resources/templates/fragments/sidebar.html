@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<body>
+    <div th:fragment="sidebar"
+        class="w-64 bg-white shadow-xl z-20 h-full flex flex-col border-r border-gray-100 flex-shrink-0 relative">
+        <!-- Logo Area -->
+        <div class="h-16 flex items-center px-6 border-b border-gray-100">
+            <a href="/" class="flex items-center gap-2">
+                <div class="bg-brand-600 text-white p-1.5 rounded-lg">
+                    <i class="fa-solid fa-building text-lg"></i>
+                </div>
+                <span class="text-xl font-bold pt-1 text-gray-800 tracking-tight">Mjengo<span
+                        class="text-accent-500">.</span></span>
+            </a>
+        </div>
+
+        <!-- Navigation Links -->
+        <div class="flex-1 overflow-y-auto py-4 px-3 flex flex-col gap-1">
+            <div class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2 ml-3">Role Workspace</div>
+
+            <a href="/" th:classappend="${activeModule == 'dashboard'} ? 'active' : 'text-gray-600'"
+                class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-md text-sm">
+                <i class="fa-solid fa-chart-pie w-5 text-center"></i> Dashboard
+            </a>
+
+            <!-- ADMIN -->
+            <th:block th:if="${session.userRole == 'ADMIN'}">
+                <a href="/admin/users" th:classappend="${activeModule == 'admin_users'} ? 'active' : 'text-gray-600'"
+                    class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-md text-sm">
+                    <i class="fa-solid fa-user-shield w-5 text-center"></i> User Management
+                </a>
+                <a href="/monitoring" th:classappend="${activeModule == 'monitoring'} ? 'active' : 'text-gray-600'"
+                    class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-md text-sm">
+                    <i class="fa-solid fa-video w-5 text-center"></i> Project Monitoring
+                </a>
+                <a href="/reports" th:classappend="${activeModule == 'reports'} ? 'active' : 'text-gray-600'"
+                    class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-md text-sm">
+                    <i class="fa-solid fa-chart-line w-5 text-center"></i> Analytics & Reports
+                </a>
+                <a href="/financials" th:classappend="${activeModule == 'financials'} ? 'active' : 'text-gray-600'"
+                    class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-md text-sm">
+                    <i class="fa-solid fa-wallet w-5 text-center"></i> Financial Oversight
+                </a>
+                <a href="/messages" th:classappend="${activeModule == 'messages'} ? 'active' : 'text-gray-600'"
+                    class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-md text-sm">
+                    <i class="fa-solid fa-comments w-5 text-center"></i> Internal Communication
+                </a>
+                <a href="/consultations/inbox"
+                    th:classappend="${activeModule == 'consultations_inbox'} ? 'active' : 'text-gray-600'"
+                    class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-md text-sm">
+                    <i class="fa-solid fa-inbox w-5 text-center"></i> Consultation inbox
+                </a>
+            </th:block>
+
+            <!-- CLIENT -->
+            <th:block th:if="${session.userRole == 'CLIENT'}">
+                <a href="/site-analysis" th:classappend="${activeModule == 'site_analysis'} ? 'active' : 'text-gray-600'"
+                    class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-md text-sm">
+                    <i class="fa-solid fa-magnifying-glass-chart w-5 text-center"></i> Site Analysis Review
+                </a>
+                <a href="/cost-estimation" th:classappend="${activeModule == 'cost_estimation'} ? 'active' : 'text-gray-600'"
+                    class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-md text-sm">
+                    <i class="fa-solid fa-file-invoice-dollar w-5 text-center"></i> Cost Estimate Review
+                </a>
+                <a href="/consultations" th:classappend="${activeModule == 'consultations'} ? 'active' : 'text-gray-600'"
+                    class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-md text-sm">
+                    <i class="fa-solid fa-calendar-check w-5 text-center"></i> Book consultation
+                </a>
+                <a href="/collaboration/approvals" th:classappend="${activeModule == 'approvals'} ? 'active' : 'text-gray-600'"
+                    class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-md text-sm">
+                    <i class="fa-solid fa-clipboard-check w-5 text-center"></i> Approvals
+                </a>
+                <a href="/messages" th:classappend="${activeModule == 'messages'} ? 'active' : 'text-gray-600'"
+                    class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-md text-sm">
+                    <i class="fa-solid fa-comments w-5 text-center"></i> Team Communication
+                </a>
+            </th:block>
+
+            <!-- PROJECT MANAGER -->
+            <th:block th:if="${session.userRole == 'PROJECT_MANAGER'}">
+                <a href="/scheduling" th:classappend="${activeModule == 'scheduling'} ? 'active' : 'text-gray-600'"
+                    class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-md text-sm">
+                    <i class="fa-solid fa-calendar-days w-5 text-center"></i> Lifecycle & Scheduling
+                </a>
+                <a href="/monitoring" th:classappend="${activeModule == 'monitoring'} ? 'active' : 'text-gray-600'"
+                    class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-md text-sm">
+                    <i class="fa-solid fa-video w-5 text-center"></i> Progress Oversight
+                </a>
+                <a href="/cost-estimation" th:classappend="${activeModule == 'cost_estimation'} ? 'active' : 'text-gray-600'"
+                    class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-md text-sm">
+                    <i class="fa-solid fa-file-invoice-dollar w-5 text-center"></i> Cost Planning (BoQ)
+                </a>
+                <a href="/messages" th:classappend="${activeModule == 'messages'} ? 'active' : 'text-gray-600'"
+                    class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-md text-sm">
+                    <i class="fa-solid fa-comments w-5 text-center"></i> Team Coordination
+                </a>
+                <a href="/consultations/inbox"
+                    th:classappend="${activeModule == 'consultations_inbox'} ? 'active' : 'text-gray-600'"
+                    class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-md text-sm">
+                    <i class="fa-solid fa-inbox w-5 text-center"></i> Consultation inbox
+                </a>
+            </th:block>
+
+            <!-- ENGINEER -->
+            <th:block th:if="${session.userRole == 'ENGINEER'}">
+                <a href="/survey" th:classappend="${activeModule == 'survey'} ? 'active' : 'text-gray-600'"
+                    class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-md text-sm">
+                    <i class="fa-solid fa-map-location-dot w-5 text-center"></i> Site Survey Input
+                </a>
+                <a href="/site-analysis" th:classappend="${activeModule == 'site_analysis'} ? 'active' : 'text-gray-600'"
+                    class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-md text-sm">
+                    <i class="fa-solid fa-magnifying-glass-chart w-5 text-center"></i> Suitability Analysis
+                </a>
+                <a href="/planning" th:classappend="${activeModule == 'planning'} ? 'active' : 'text-gray-600'"
+                    class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-md text-sm">
+                    <i class="fa-solid fa-compass-drafting w-5 text-center"></i> Design Management
+                </a>
+                <a href="/monitoring" th:classappend="${activeModule == 'monitoring'} ? 'active' : 'text-gray-600'"
+                    class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-md text-sm">
+                    <i class="fa-solid fa-arrow-up-right-dots w-5 text-center"></i> Progress Validation
+                </a>
+                <a href="/consultations/inbox"
+                    th:classappend="${activeModule == 'consultations_inbox'} ? 'active' : 'text-gray-600'"
+                    class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-md text-sm">
+                    <i class="fa-solid fa-inbox w-5 text-center"></i> Consultation inbox
+                </a>
+            </th:block>
+
+            <!-- CONTRACTOR -->
+            <th:block th:if="${session.userRole == 'CONTRACTOR'}">
+                <a href="/scheduling" th:classappend="${activeModule == 'scheduling'} ? 'active' : 'text-gray-600'"
+                    class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-md text-sm">
+                    <i class="fa-solid fa-list-check w-5 text-center"></i> Execution Tasks
+                </a>
+                <a href="/workforce" th:classappend="${activeModule == 'workforce'} ? 'active' : 'text-gray-600'"
+                    class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-md text-sm">
+                    <i class="fa-solid fa-users-gear w-5 text-center"></i> Crew Management
+                </a>
+                <a href="/inventory" th:classappend="${activeModule == 'inventory'} ? 'active' : 'text-gray-600'"
+                    class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-md text-sm">
+                    <i class="fa-solid fa-boxes-stacked w-5 text-center"></i> Material Requests
+                </a>
+                <a href="/messages" th:classappend="${activeModule == 'messages'} ? 'active' : 'text-gray-600'"
+                    class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-md text-sm">
+                    <i class="fa-solid fa-comments w-5 text-center"></i> PM/Engineer Communication
+                </a>
+                <a href="/consultations/inbox"
+                    th:classappend="${activeModule == 'consultations_inbox'} ? 'active' : 'text-gray-600'"
+                    class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-md text-sm">
+                    <i class="fa-solid fa-inbox w-5 text-center"></i> Consultation inbox
+                </a>
+            </th:block>
+        </div>
+
+        <!-- Bottom Logout -->
+        <div class="p-4 border-t border-gray-100">
+            <a href="/logout"
+                class="flex items-center gap-3 px-3 py-2 rounded-md text-sm text-gray-500 hover:text-red-600 hover:bg-red-50 transition-colors">
+                <i class="fa-solid fa-arrow-right-from-bracket w-5 text-center"></i> Sign Out
+            </a>
+        </div>
+    </div>
+</body>
+
+</html>

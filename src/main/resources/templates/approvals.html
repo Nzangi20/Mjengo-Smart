@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/base :: head(${title})}"></head>
+
+<body class="bg-gray-50 flex h-screen overflow-hidden text-gray-800">
+    <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+    <div class="flex-1 flex flex-col relative w-full h-full">
+        <div th:replace="~{fragments/navbar :: navbar}"></div>
+        <main class="flex-1 overflow-y-auto p-6 lg:p-8">
+            <div class="mb-8">
+                <h1 class="text-2xl font-bold text-gray-900"><i
+                        class="fa-solid fa-clipboard-check text-brand-500 mr-2"></i>Design, Budget &amp; Timeline
+                    Approvals</h1>
+                <p class="text-sm text-gray-500 mt-1">Clients approve BoQ, drawings, and schedule. Project managers
+                    monitor status.</p>
+            </div>
+
+            <div th:if="${success}"
+                class="mb-4 bg-emerald-50 border border-emerald-200 text-emerald-800 text-sm px-4 py-3 rounded-lg">
+                <span th:text="${success}"></span>
+            </div>
+            <div th:if="${error}"
+                class="mb-4 bg-red-50 border border-red-200 text-red-700 text-sm px-4 py-3 rounded-lg">
+                <span th:text="${error}"></span>
+            </div>
+
+            <div th:if="${approvalProjects == null or approvalProjects.isEmpty()}"
+                class="bg-white rounded-xl border-2 border-dashed border-gray-200 p-12 text-center text-gray-500">
+                No projects to show.
+            </div>
+
+            <div th:each="p : ${approvalProjects}" class="bg-white rounded-xl border border-gray-100 shadow-sm p-6 mb-4">
+                <div class="flex flex-wrap justify-between gap-4 mb-4">
+                    <div>
+                        <h2 class="font-bold text-gray-900" th:text="${p.name}"></h2>
+                        <p class="text-xs text-gray-500" th:text="${p.location}"></p>
+                    </div>
+                    <div class="text-xs text-gray-500">
+                        <span class="font-semibold">Type:</span> <span th:text="${p.constructionType}"></span>
+                    </div>
+                </div>
+
+                <div th:if="${session.userRole == 'CLIENT'}" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="border border-gray-100 rounded-lg p-4">
+                        <p class="text-xs font-bold text-gray-500 uppercase mb-2">Design</p>
+                        <span th:text="${p.designApproval}"
+                            class="text-sm font-bold px-2 py-0.5 rounded bg-gray-100"></span>
+                        <div class="mt-3 flex gap-2">
+                            <form th:action="@{/collaboration/approve}" method="post" class="inline">
+                                <input type="hidden" name="projectId" th:value="${p.id}">
+                                <input type="hidden" name="approvalType" value="DESIGN">
+                                <input type="hidden" name="decision" value="APPROVE">
+                                <button type="submit" class="text-xs bg-emerald-600 text-white px-3 py-1 rounded">Approve
+                                </button>
+                            </form>
+                            <form th:action="@{/collaboration/approve}" method="post" class="inline">
+                                <input type="hidden" name="projectId" th:value="${p.id}">
+                                <input type="hidden" name="approvalType" value="DESIGN">
+                                <input type="hidden" name="decision" value="REJECT">
+                                <button type="submit" class="text-xs border border-red-200 text-red-600 px-3 py-1 rounded">
+                                    Reject</button>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="border border-gray-100 rounded-lg p-4">
+                        <p class="text-xs font-bold text-gray-500 uppercase mb-2">Budget (BoQ)</p>
+                        <span th:text="${p.budgetApproval}"
+                            class="text-sm font-bold px-2 py-0.5 rounded bg-gray-100"></span>
+                        <div class="mt-3 flex gap-2">
+                            <form th:action="@{/collaboration/approve}" method="post" class="inline">
+                                <input type="hidden" name="projectId" th:value="${p.id}">
+                                <input type="hidden" name="approvalType" value="BUDGET">
+                                <input type="hidden" name="decision" value="APPROVE">
+                                <button type="submit" class="text-xs bg-emerald-600 text-white px-3 py-1 rounded">Approve
+                                </button>
+                            </form>
+                            <form th:action="@{/collaboration/approve}" method="post" class="inline">
+                                <input type="hidden" name="projectId" th:value="${p.id}">
+                                <input type="hidden" name="approvalType" value="BUDGET">
+                                <input type="hidden" name="decision" value="REJECT">
+                                <button type="submit" class="text-xs border border-red-200 text-red-600 px-3 py-1 rounded">
+                                    Reject</button>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="border border-gray-100 rounded-lg p-4">
+                        <p class="text-xs font-bold text-gray-500 uppercase mb-2">Timeline</p>
+                        <span th:text="${p.timelineApproval}"
+                            class="text-sm font-bold px-2 py-0.5 rounded bg-gray-100"></span>
+                        <div class="mt-3 flex gap-2">
+                            <form th:action="@{/collaboration/approve}" method="post" class="inline">
+                                <input type="hidden" name="projectId" th:value="${p.id}">
+                                <input type="hidden" name="approvalType" value="TIMELINE">
+                                <input type="hidden" name="decision" value="APPROVE">
+                                <button type="submit" class="text-xs bg-emerald-600 text-white px-3 py-1 rounded">Approve
+                                </button>
+                            </form>
+                            <form th:action="@{/collaboration/approve}" method="post" class="inline">
+                                <input type="hidden" name="projectId" th:value="${p.id}">
+                                <input type="hidden" name="approvalType" value="TIMELINE">
+                                <input type="hidden" name="decision" value="REJECT">
+                                <button type="submit" class="text-xs border border-red-200 text-red-600 px-3 py-1 rounded">
+                                    Reject</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <div th:if="${session.userRole == 'ADMIN' or session.userRole == 'PROJECT_MANAGER'}"
+                    class="border border-gray-50 rounded-lg p-4 bg-gray-50 text-sm text-gray-700">
+                    <span class="font-semibold">Approvals —</span>
+                    Design: <span th:text="${p.designApproval}"></span> ·
+                    Budget: <span th:text="${p.budgetApproval}"></span> ·
+                    Timeline: <span th:text="${p.timelineApproval}"></span>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+
+</html>

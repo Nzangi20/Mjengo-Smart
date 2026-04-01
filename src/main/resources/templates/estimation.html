@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/base :: head(${title})}"></head>
+
+<body class="bg-gray-50 flex h-screen overflow-hidden text-gray-800">
+    <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+    <div class="flex-1 flex flex-col relative w-full h-full">
+        <div th:replace="~{fragments/navbar :: navbar}"></div>
+        <main class="flex-1 overflow-y-auto p-6 lg:p-8">
+
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+                <div>
+                    <h1 class="text-2xl font-bold text-gray-900"><i
+                            class="fa-solid fa-file-invoice-dollar text-brand-500 mr-2"></i>Smart Cost Estimation</h1>
+                    <p th:if="${readOnlyClient}" class="text-sm text-gray-500 mt-1">Review BoQ estimates prepared for
+                        your linked projects.</p>
+                    <p th:unless="${readOnlyClient}" class="text-sm text-gray-500 mt-1">Generate intelligent Bill of
+                        Quantities with regional cost adjustments.</p>
+                </div>
+            </div>
+
+            <div th:if="${pageError != null}"
+                class="mb-6 bg-red-50 border border-red-200 text-red-800 text-sm px-4 py-3 rounded-lg flex items-center gap-2">
+                <i class="fa-solid fa-circle-exclamation"></i>
+                <span th:text="${pageError}"></span>
+            </div>
+
+            <div th:if="${readOnlyClient}"
+                class="mb-6 bg-amber-50 border border-amber-200 text-amber-900 text-sm px-4 py-3 rounded-lg">
+                <i class="fa-solid fa-eye mr-2"></i> Read-only: your project manager or engineer generates BoQs. Open
+                <strong>View BoQ</strong> on any row below for the full breakdown, charts, and line items.
+            </div>
+
+            <!-- Estimation Form -->
+            <div th:unless="${readOnlyClient}" class="bg-white rounded-xl border border-gray-100 shadow-sm p-6 mb-8">
+                <h2 class="font-bold text-gray-900 mb-4"><i
+                        class="fa-solid fa-calculator text-indigo-500 mr-2"></i>Generate New Estimate</h2>
+                <p class="text-xs text-gray-500 mb-4">BoQ engine uses regional rates, building type, design finish tier,
+                    and — when linked — site difficulty from suitability analysis.</p>
+                <form action="/cost-estimation/generate" method="POST"
+                    class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <div class="lg:col-span-3">
+                        <label class="block text-xs font-semibold text-gray-700 mb-1">Link to project (applies site
+                            risk multiplier)</label>
+                        <select name="linkedProjectId"
+                            class="w-full border border-gray-300 rounded-lg px-4 py-2 text-sm focus:ring-2 focus:ring-brand-500 outline-none bg-gray-50 appearance-none">
+                            <option value="">— None —</option>
+                            <option th:each="p : ${projects}" th:value="${p.id}" th:text="${p.name}"></option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-700 mb-1">Project Name</label>
+                        <input type="text" name="projectName" placeholder="e.g. Westlands Apartments" required
+                            class="w-full border border-gray-300 rounded-lg px-4 py-2 text-sm focus:ring-2 focus:ring-brand-500 outline-none bg-gray-50">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-700 mb-1">Project Type</label>
+                        <select name="projectType" required
+                            class="w-full border border-gray-300 rounded-lg px-4 py-2 text-sm focus:ring-2 focus:ring-brand-500 outline-none bg-gray-50 appearance-none">
+                            <option value="RESIDENTIAL">Residential</option>
+                            <option value="COMMERCIAL">Commercial</option>
+                            <option value="INDUSTRIAL">Industrial</option>
+                            <option value="INFRASTRUCTURE">Infrastructure</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-700 mb-1">Location / Region</label>
+                        <select name="location" required
+                            class="w-full border border-gray-300 rounded-lg px-4 py-2 text-sm focus:ring-2 focus:ring-brand-500 outline-none bg-gray-50 appearance-none">
+                            <option value="Nairobi">Nairobi (Base)</option>
+                            <option value="Mombasa">Mombasa (+5%)</option>
+                            <option value="Kisumu">Kisumu (-10%)</option>
+                            <option value="Nakuru">Nakuru (-12%)</option>
+                            <option value="Eldoret">Eldoret (-15%)</option>
+                            <option value="Thika">Thika (-8%)</option>
+                            <option value="Other">Other Region (-5%)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-700 mb-1">Floor Area (sqm)</label>
+                        <input type="number" name="areaSqm" placeholder="e.g. 250" required min="10" step="1"
+                            class="w-full border border-gray-300 rounded-lg px-4 py-2 text-sm focus:ring-2 focus:ring-brand-500 outline-none bg-gray-50">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-700 mb-1">Number of Floors</label>
+                        <input type="number" name="floors" placeholder="e.g. 2" required min="1" max="50"
+                            class="w-full border border-gray-300 rounded-lg px-4 py-2 text-sm focus:ring-2 focus:ring-brand-500 outline-none bg-gray-50">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-700 mb-1">Design finish tier</label>
+                        <select name="designStyle"
+                            class="w-full border border-gray-300 rounded-lg px-4 py-2 text-sm focus:ring-2 focus:ring-brand-500 outline-none bg-gray-50 appearance-none">
+                            <option value="STANDARD">Standard</option>
+                            <option value="CONTEMPORARY">Contemporary (+8% materials)</option>
+                            <option value="PREMIUM">Premium (+18% materials)</option>
+                        </select>
+                    </div>
+                    <div class="lg:col-span-3">
+                        <label class="block text-xs font-semibold text-gray-700 mb-1">Client account email (if no project
+                            link)</label>
+                        <input type="email" name="ownerClientEmail" autocomplete="off"
+                            placeholder="Registered client email — who may review this BoQ in the client portal"
+                            class="w-full border border-gray-300 rounded-lg px-4 py-2 text-sm focus:ring-2 focus:ring-brand-500 outline-none bg-gray-50">
+                        <p class="text-xs text-gray-400 mt-1">When a project is linked above, that project’s client sees
+                            the estimate. Use this only for unlinked drafts so the right client account gets access.</p>
+                    </div>
+                    <div class="flex items-end">
+                        <button type="submit"
+                            class="w-full bg-brand-600 hover:bg-brand-700 text-white rounded-lg px-4 py-2 text-sm font-medium transition-colors flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-bolt"></i> Generate BoQ
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Generated Estimate Result -->
+            <div th:if="${generated}" class="space-y-6">
+
+                <div class="flex justify-end">
+                    <a href="/cost-estimation" class="text-sm font-semibold text-brand-600 hover:text-brand-800"><i
+                            class="fa-solid fa-arrow-left mr-1"></i> Back to list</a>
+                </div>
+
+                <!-- Summary Cards -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div class="bg-white p-5 rounded-xl border border-gray-100 shadow-sm">
+                        <p class="text-xs text-gray-500 uppercase tracking-wider">Materials</p>
+                        <h3 class="text-xl font-black text-gray-900 mt-1"
+                            th:text="'KES ' + ${#numbers.formatDecimal(estimate.materialTotal, 1, 0)}">KES 0</h3>
+                        <div class="w-full bg-gray-100 rounded-full h-1.5 mt-2">
+                            <div class="bg-blue-500 h-1.5 rounded-full"
+                                th:style="'width:' + ${estimate.subtotal > 0 ? (estimate.materialTotal / estimate.subtotal * 100) : 0} + '%'">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white p-5 rounded-xl border border-gray-100 shadow-sm">
+                        <p class="text-xs text-gray-500 uppercase tracking-wider">Labor</p>
+                        <h3 class="text-xl font-black text-gray-900 mt-1"
+                            th:text="'KES ' + ${#numbers.formatDecimal(estimate.laborTotal, 1, 0)}">KES 0</h3>
+                        <div class="w-full bg-gray-100 rounded-full h-1.5 mt-2">
+                            <div class="bg-emerald-500 h-1.5 rounded-full"
+                                th:style="'width:' + ${estimate.subtotal > 0 ? (estimate.laborTotal / estimate.subtotal * 100) : 0} + '%'">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white p-5 rounded-xl border border-gray-100 shadow-sm">
+                        <p class="text-xs text-gray-500 uppercase tracking-wider">Equipment</p>
+                        <h3 class="text-xl font-black text-gray-900 mt-1"
+                            th:text="'KES ' + ${#numbers.formatDecimal(estimate.equipmentTotal, 1, 0)}">KES 0</h3>
+                        <div class="w-full bg-gray-100 rounded-full h-1.5 mt-2">
+                            <div class="bg-orange-500 h-1.5 rounded-full"
+                                th:style="'width:' + ${estimate.subtotal > 0 ? (estimate.equipmentTotal / estimate.subtotal * 100) : 0} + '%'">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-gradient-to-br from-brand-600 to-brand-700 p-5 rounded-xl shadow-sm text-white">
+                        <p class="text-xs uppercase tracking-wider text-white/70">Grand Total</p>
+                        <h3 class="text-xl font-black mt-1"
+                            th:text="'KES ' + ${#numbers.formatDecimal(estimate.grandTotal, 1, 0)}">KES 0</h3>
+                        <p class="text-[10px] text-white/60 mt-1">Incl. 10% contingency + 16% VAT</p>
+                    </div>
+                </div>
+
+                <!-- Project Info -->
+                <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
+                    <div class="flex flex-wrap gap-6 text-sm">
+                        <div><span class="text-gray-500">Project:</span> <span class="font-semibold text-gray-900"
+                                th:text="${estimate.projectName}"></span></div>
+                        <div><span class="text-gray-500">Type:</span> <span class="font-semibold text-gray-900"
+                                th:text="${estimate.projectType}"></span></div>
+                        <div><span class="text-gray-500">Location:</span> <span class="font-semibold text-gray-900"
+                                th:text="${estimate.location}"></span></div>
+                        <div><span class="text-gray-500">Area:</span> <span class="font-semibold text-gray-900"
+                                th:text="${estimate.areaSqm} + ' sqm × ' + ${estimate.floors} + ' floors'"></span></div>
+                        <div><span class="text-gray-500">Generated:</span> <span class="font-semibold text-gray-900"
+                                th:text="${estimate.generatedAt}"></span></div>
+                        <div th:if="${estimate.linkedProjectId > 0}"><span class="text-gray-500">Linked project
+                                ID:</span> <span class="font-semibold text-gray-900"
+                                th:text="${estimate.linkedProjectId}"></span></div>
+                        <div><span class="text-gray-500">Site multiplier:</span> <span
+                                class="font-semibold text-gray-900"
+                                th:text="${estimate.siteDifficultyMultiplier}"></span></div>
+                    </div>
+                </div>
+
+                <div th:if="${estimate.integrationNotes != null and !estimate.integrationNotes.isEmpty()}"
+                    class="bg-brand-50 border border-brand-100 rounded-lg px-4 py-3 text-sm text-brand-900 mb-6">
+                    <i class="fa-solid fa-link mr-2"></i><span th:text="${estimate.integrationNotes}"></span>
+                </div>
+
+                <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-6 mb-8">
+                    <h3 class="font-bold text-gray-900 mb-4 text-sm">Cost distribution</h3>
+                    <div class="max-w-md mx-auto h-56">
+                        <canvas id="costChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- BoQ Table -->
+                <div class="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
+                    <div class="p-5 border-b border-gray-100">
+                        <h2 class="font-bold text-gray-900"><i
+                                class="fa-solid fa-table-list text-brand-500 mr-2"></i>Bill of Quantities (BoQ)</h2>
+                    </div>
+                    <table class="w-full text-left">
+                        <thead class="text-xs uppercase text-gray-500 border-b border-gray-200 bg-gray-50">
+                            <tr>
+                                <th class="px-4 py-3 w-12">#</th>
+                                <th class="px-4 py-3">Category</th>
+                                <th class="px-4 py-3">Description</th>
+                                <th class="px-4 py-3 text-right">Qty</th>
+                                <th class="px-4 py-3">Unit</th>
+                                <th class="px-4 py-3 text-right">Rate (KES)</th>
+                                <th class="px-4 py-3 text-right">Total (KES)</th>
+                            </tr>
+                        </thead>
+                        <tbody class="text-sm divide-y divide-gray-100">
+                            <tr th:each="item : ${estimate.items}" class="hover:bg-gray-50">
+                                <td class="px-4 py-2.5 text-gray-400 text-xs" th:text="${item.itemNo}"></td>
+                                <td class="px-4 py-2.5">
+                                    <span th:if="${item.category == 'MATERIAL'}"
+                                        class="bg-blue-100 text-blue-700 text-[10px] px-2 py-0.5 rounded font-bold">Material</span>
+                                    <span th:if="${item.category == 'LABOR'}"
+                                        class="bg-emerald-100 text-emerald-700 text-[10px] px-2 py-0.5 rounded font-bold">Labor</span>
+                                    <span th:if="${item.category == 'EQUIPMENT'}"
+                                        class="bg-orange-100 text-orange-700 text-[10px] px-2 py-0.5 rounded font-bold">Equipment</span>
+                                </td>
+                                <td class="px-4 py-2.5 text-gray-900" th:text="${item.description}"></td>
+                                <td class="px-4 py-2.5 text-right font-mono text-gray-700"
+                                    th:text="${#numbers.formatDecimal(item.quantity, 1, 0)}"></td>
+                                <td class="px-4 py-2.5 text-gray-500" th:text="${item.unit}"></td>
+                                <td class="px-4 py-2.5 text-right font-mono text-gray-700"
+                                    th:text="${#numbers.formatDecimal(item.rate, 1, 0)}"></td>
+                                <td class="px-4 py-2.5 text-right font-mono font-semibold text-gray-900"
+                                    th:text="${#numbers.formatDecimal(item.total, 1, 0)}"></td>
+                            </tr>
+                        </tbody>
+                        <tfoot class="text-sm font-semibold bg-gray-50 border-t-2 border-gray-200">
+                            <tr>
+                                <td colspan="6" class="px-4 py-2.5 text-right text-gray-600">Subtotal</td>
+                                <td class="px-4 py-2.5 text-right font-mono text-gray-900"
+                                    th:text="'KES ' + ${#numbers.formatDecimal(estimate.subtotal, 1, 0)}"></td>
+                            </tr>
+                            <tr>
+                                <td colspan="6" class="px-4 py-2 text-right text-gray-500 text-xs">Contingency (10%)
+                                </td>
+                                <td class="px-4 py-2 text-right font-mono text-gray-700 text-xs"
+                                    th:text="'KES ' + ${#numbers.formatDecimal(estimate.contingency, 1, 0)}"></td>
+                            </tr>
+                            <tr>
+                                <td colspan="6" class="px-4 py-2 text-right text-gray-500 text-xs">VAT (16%)</td>
+                                <td class="px-4 py-2 text-right font-mono text-gray-700 text-xs"
+                                    th:text="'KES ' + ${#numbers.formatDecimal(estimate.vat, 1, 0)}"></td>
+                            </tr>
+                            <tr class="bg-brand-50 border-t-2 border-brand-200">
+                                <td colspan="6" class="px-4 py-3 text-right text-brand-700 font-bold">GRAND TOTAL</td>
+                                <td class="px-4 py-3 text-right font-mono font-black text-brand-700 text-lg"
+                                    th:text="'KES ' + ${#numbers.formatDecimal(estimate.grandTotal, 1, 0)}"></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+
+            <!-- List / empty state (when not showing a single generated result) -->
+            <div th:if="${generated == false}">
+                <div th:if="${readOnlyClient and (estimates == null or estimates.isEmpty())}"
+                    class="bg-white rounded-xl border-2 border-dashed border-gray-200 p-12 text-center">
+                    <div class="bg-indigo-50 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4"><i
+                            class="fa-solid fa-file-invoice-dollar text-indigo-500 text-2xl"></i></div>
+                    <h3 class="text-lg font-bold text-gray-900 mb-2">No BoQ available for your projects yet</h3>
+                    <p class="text-sm text-gray-500 max-w-lg mx-auto">Estimates appear here when your project manager or
+                        engineer generates a BoQ and links it to a project where you are the client. Create a project from
+                        your dashboard first, then ask your team to run cost estimation with that project selected.</p>
+                </div>
+
+                <div th:if="${!readOnlyClient and (estimates == null or estimates.isEmpty())}"
+                    class="bg-white rounded-xl border-2 border-dashed border-gray-200 p-12 text-center">
+                    <div class="bg-indigo-50 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4"><i
+                            class="fa-solid fa-calculator text-indigo-500 text-2xl"></i></div>
+                    <h3 class="text-lg font-bold text-gray-900 mb-2">No estimates generated yet</h3>
+                    <p class="text-sm text-gray-500">Use the form above to generate a detailed Bill of Quantities.</p>
+                </div>
+
+                <div th:if="${estimates != null and !estimates.isEmpty()}"
+                    class="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
+                    <div class="p-5 border-b border-gray-100">
+                        <h2 class="font-bold text-gray-900"><i
+                                class="fa-solid fa-clock-rotate-left text-brand-500 mr-2"></i><span
+                                th:text="${readOnlyClient} ? 'Your BoQ estimates' : 'Previous estimates'"></span></h2>
+                    </div>
+                    <table class="w-full text-left">
+                        <thead class="text-xs uppercase text-gray-500 border-b border-gray-200 bg-gray-50">
+                            <tr>
+                                <th class="px-6 py-3">Project</th>
+                                <th class="px-6 py-3">Type</th>
+                                <th class="px-6 py-3">Location</th>
+                                <th class="px-6 py-3">Area</th>
+                                <th class="px-6 py-3 text-right">Grand Total</th>
+                                <th class="px-6 py-3">Generated</th>
+                                <th class="px-6 py-3 text-right">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody class="text-sm divide-y divide-gray-100">
+                            <tr th:each="e : ${estimates}" class="hover:bg-gray-50">
+                                <td class="px-6 py-3 font-medium text-gray-900" th:text="${e.projectName}"></td>
+                                <td class="px-6 py-3 text-gray-600" th:text="${e.projectType}"></td>
+                                <td class="px-6 py-3 text-gray-600" th:text="${e.location}"></td>
+                                <td class="px-6 py-3 text-gray-600"
+                                    th:text="${e.areaSqm} + ' sqm × ' + ${e.floors} + 'F'"></td>
+                                <td class="px-6 py-3 text-right font-semibold text-brand-700"
+                                    th:text="'KES ' + ${#numbers.formatDecimal(e.grandTotal, 1, 0)}"></td>
+                                <td class="px-6 py-3 text-gray-500 text-xs" th:text="${e.generatedAt}"></td>
+                                <td class="px-6 py-3 text-right">
+                                    <a th:href="@{/cost-estimation/view(id=${e.id})}"
+                                        class="text-brand-600 hover:text-brand-800 text-xs font-bold"
+                                        th:text="${readOnlyClient} ? 'View BoQ' : 'Open'">View</a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <script th:if="${generated}" src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+            <script th:if="${generated}" th:inline="javascript">
+                /*<![CDATA[*/
+                const mat = /*[[${estimate.materialTotal}]]*/ 0;
+                const lab = /*[[${estimate.laborTotal}]]*/ 0;
+                const eq = /*[[${estimate.equipmentTotal}]]*/ 0;
+                const ctx = document.getElementById('costChart');
+                if (ctx) {
+                    new Chart(ctx, {
+                        type: 'doughnut',
+                        data: {
+                            labels: ['Materials', 'Labor', 'Equipment'],
+                            datasets: [{
+                                data: [mat, lab, eq],
+                                backgroundColor: ['#3b82f6', '#10b981', '#f97316'],
+                                borderWidth: 0
+                            }]
+                        },
+                        options: {
+                            plugins: { legend: { position: 'bottom' } },
+                            maintainAspectRatio: false
+                        }
+                    });
+                }
+                /*]]>*/
+            </script>
+        </main>
+    </div>
+</body>
+
+</html>

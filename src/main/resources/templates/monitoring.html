@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/base :: head(${title})}"></head>
+
+<body class="bg-gray-50 flex h-screen overflow-hidden text-gray-800">
+    <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+    <div class="flex-1 flex flex-col relative w-full h-full">
+        <div th:replace="~{fragments/navbar :: navbar}"></div>
+        <main class="flex-1 overflow-y-auto p-6 lg:p-8">
+
+            <!-- Upload Toasts -->
+            <div th:if="${uploadSuccess}"
+                class="mb-6 bg-emerald-50 border border-emerald-200 text-emerald-800 text-sm px-4 py-3 rounded-lg flex items-center gap-2">
+                <i class="fa-solid fa-circle-check"></i> <span th:text="${uploadSuccess}">Success</span>
+            </div>
+            <div th:if="${uploadError}"
+                class="mb-6 bg-red-50 border border-red-200 text-red-700 text-sm px-4 py-3 rounded-lg flex items-center gap-2">
+                <i class="fa-solid fa-circle-exclamation"></i> <span th:text="${uploadError}">Error</span>
+            </div>
+
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+                <div>
+                    <h1 class="text-2xl font-bold text-gray-900" th:text="${title}">Construction Monitoring</h1>
+                    <p class="text-sm text-gray-500 mt-1">Daily site images, videos, and visual progression logs.</p>
+                </div>
+            </div>
+
+            <!-- Functional Media Upload -->
+            <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-6 mb-8">
+                <h2 class="text-lg font-bold text-gray-800 mb-4"><i class="fa-solid fa-camera text-brand-500 mr-2"></i>
+                    Upload Site Media</h2>
+                <form action="/upload" method="POST" enctype="multipart/form-data"
+                    class="flex flex-col md:flex-row items-center gap-4">
+                    <input type="hidden" name="module" value="monitoring">
+                    <input type="file" name="file"
+                        class="flex-1 text-sm text-gray-600 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-brand-50 file:text-brand-700 hover:file:bg-brand-100 cursor-pointer"
+                        required>
+                    <button type="submit"
+                        class="bg-brand-600 hover:bg-brand-700 text-white px-5 py-2 rounded-lg text-sm font-medium transition-colors shadow-sm flex items-center gap-2 whitespace-nowrap">
+                        <i class="fa-solid fa-cloud-arrow-up"></i> Upload Media
+                    </button>
+                </form>
+            </div>
+
+            <!-- Media Timeline -->
+            <div
+                class="max-w-4xl mx-auto space-y-8 relative before:absolute before:inset-0 before:ml-5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-slate-300 before:to-transparent">
+
+                <!-- Timeline Item -->
+                <div
+                    class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
+                    <div
+                        class="flex items-center justify-center w-10 h-10 rounded-full border border-white bg-slate-300 group-[.is-active]:bg-brand-500 group-[.is-active]:text-emerald-50 text-slate-500 shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 z-10">
+                        <i class="fa-solid fa-check"></i>
+                    </div>
+                    <div
+                        class="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] bg-white p-5 justify-end rounded-xl shadow-sm border border-gray-100 hover-lift">
+                        <div class="flex flex-col md:flex-row justify-between items-start mb-2">
+                            <h3 class="font-bold text-gray-900">Foundation Pouring Complete</h3>
+                            <span
+                                class="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded font-mono mt-1 md:mt-0">Oct
+                                26, 2026</span>
+                        </div>
+                        <p class="text-sm text-gray-600 mb-4">West wing foundation successfully set and passed initial
+                            curing inspection.</p>
+                        <div class="grid grid-cols-2 gap-2">
+                            <div
+                                class="bg-gray-200 h-24 rounded cursor-pointer relative overflow-hidden flex items-center justify-center border border-gray-300 hover:opacity-80 transition-opacity">
+                                <i class="fa-solid fa-image text-gray-400 text-xl"></i>
+                            </div>
+                            <div
+                                class="bg-gray-200 h-24 rounded cursor-pointer relative overflow-hidden flex items-center justify-center border border-gray-300 hover:opacity-80 transition-opacity">
+                                <i class="fa-solid fa-video text-gray-400 text-xl"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Timeline Item -->
+                <div
+                    class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group border-transparent">
+                    <div
+                        class="flex items-center justify-center w-10 h-10 rounded-full border border-white bg-slate-300 text-slate-500 shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 z-10">
+                        <i class="fa-solid fa-camera"></i>
+                    </div>
+                    <div
+                        class="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] bg-white p-5 justify-end rounded-xl shadow-sm border border-gray-100 hover-lift">
+                        <div class="flex flex-col md:flex-row justify-between items-start mb-2">
+                            <h3 class="font-bold text-gray-900">Trenching Phase 1</h3>
+                            <span
+                                class="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded font-mono mt-1 md:mt-0">Oct
+                                20, 2026</span>
+                        </div>
+                        <p class="text-sm text-gray-600 mb-4">Earthworks began for the main plumbing and electrical
+                            lines.</p>
+                        <div class="grid grid-cols-1 gap-2">
+                            <div
+                                class="bg-gray-200 h-32 rounded cursor-pointer relative overflow-hidden flex items-center justify-center border border-gray-300 hover:opacity-80 transition-opacity">
+                                <i class="fa-solid fa-image text-gray-400 text-2xl"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+</body>
+
+</html>

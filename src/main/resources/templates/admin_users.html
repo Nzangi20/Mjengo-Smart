@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/base :: head(${title})}"></head>
+
+<body class="bg-gray-50 flex h-screen overflow-hidden text-gray-800">
+    <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+    <div class="flex-1 flex flex-col relative w-full h-full">
+        <div th:replace="~{fragments/navbar :: navbar}"></div>
+        <main class="flex-1 overflow-y-auto p-6 lg:p-8">
+            <div th:if="${success}"
+                class="mb-6 bg-emerald-50 border border-emerald-200 text-emerald-800 text-sm px-4 py-3 rounded-lg flex items-center gap-2">
+                <i class="fa-solid fa-circle-check"></i> <span th:text="${success}">OK</span>
+            </div>
+            <div th:if="${error}"
+                class="mb-6 bg-red-50 border border-red-200 text-red-700 text-sm px-4 py-3 rounded-lg flex items-center gap-2">
+                <i class="fa-solid fa-circle-exclamation"></i> <span th:text="${error}">Error</span>
+            </div>
+
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+                <div>
+                    <h1 class="text-2xl font-bold text-gray-900"><i
+                            class="fa-solid fa-users-gear text-brand-500 mr-2"></i>User Management</h1>
+                    <p class="text-sm text-gray-500 mt-1">Manage user accounts, roles, and permissions</p>
+                </div>
+                <div class="flex gap-3">
+                    <span class="bg-brand-50 text-brand-700 px-4 py-2 rounded-lg text-sm font-semibold">
+                        <i class="fa-solid fa-users mr-1"></i> <span th:text="${allUsers.size()}">0</span> Total Users
+                    </span>
+                </div>
+            </div>
+
+            <!-- Role Stats -->
+            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 mb-8">
+                <div class="bg-white p-4 rounded-xl border border-gray-100 shadow-sm text-center">
+                    <div class="bg-red-50 w-10 h-10 rounded-full flex items-center justify-center mx-auto mb-2">
+                        <i class="fa-solid fa-shield-halved text-red-500"></i>
+                    </div>
+                    <p class="text-2xl font-black text-gray-900" th:text="${adminCount}">0</p>
+                    <p class="text-xs text-gray-500">Admins</p>
+                </div>
+                <div class="bg-white p-4 rounded-xl border border-gray-100 shadow-sm text-center">
+                    <div class="bg-indigo-50 w-10 h-10 rounded-full flex items-center justify-center mx-auto mb-2">
+                        <i class="fa-solid fa-clipboard-user text-indigo-500"></i>
+                    </div>
+                    <p class="text-2xl font-black text-gray-900" th:text="${pmCount}">0</p>
+                    <p class="text-xs text-gray-500">Project Mgrs</p>
+                </div>
+                <div class="bg-white p-4 rounded-xl border border-gray-100 shadow-sm text-center">
+                    <div class="bg-orange-50 w-10 h-10 rounded-full flex items-center justify-center mx-auto mb-2">
+                        <i class="fa-solid fa-helmet-safety text-orange-500"></i>
+                    </div>
+                    <p class="text-2xl font-black text-gray-900" th:text="${engineerCount}">0</p>
+                    <p class="text-xs text-gray-500">Engineers</p>
+                </div>
+                <div class="bg-white p-4 rounded-xl border border-gray-100 shadow-sm text-center">
+                    <div class="bg-emerald-50 w-10 h-10 rounded-full flex items-center justify-center mx-auto mb-2">
+                        <i class="fa-solid fa-person-digging text-emerald-500"></i>
+                    </div>
+                    <p class="text-2xl font-black text-gray-900" th:text="${contractorCount}">0</p>
+                    <p class="text-xs text-gray-500">Contractors</p>
+                </div>
+                <div class="bg-white p-4 rounded-xl border border-gray-100 shadow-sm text-center">
+                    <div class="bg-purple-50 w-10 h-10 rounded-full flex items-center justify-center mx-auto mb-2">
+                        <i class="fa-solid fa-briefcase text-purple-500"></i>
+                    </div>
+                    <p class="text-2xl font-black text-gray-900" th:text="${clientCount}">0</p>
+                    <p class="text-xs text-gray-500">Clients</p>
+                </div>
+            </div>
+
+            <!-- Users Table -->
+            <div th:if="${allUsers.isEmpty()}"
+                class="bg-white rounded-xl border-2 border-dashed border-gray-200 p-12 text-center">
+                <div class="bg-brand-50 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4"><i
+                        class="fa-solid fa-user-plus text-brand-500 text-2xl"></i></div>
+                <h3 class="text-lg font-bold text-gray-900 mb-2">No users registered</h3>
+                <p class="text-sm text-gray-500">Users will appear here once they register.</p>
+            </div>
+
+            <div th:if="${!allUsers.isEmpty()}"
+                class="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
+                <div class="p-5 border-b border-gray-100">
+                    <h2 class="font-bold text-gray-900"><i class="fa-solid fa-list text-brand-500 mr-2"></i>All
+                        Registered Users</h2>
+                </div>
+                <table class="w-full text-left">
+                    <thead class="text-xs uppercase text-gray-500 border-b border-gray-200 bg-gray-50">
+                        <tr>
+                            <th class="px-6 py-3">ID</th>
+                            <th class="px-6 py-3">Name</th>
+                            <th class="px-6 py-3">Email</th>
+                            <th class="px-6 py-3">Current Role</th>
+                            <th class="px-6 py-3 text-center">Change Role</th>
+                            <th class="px-6 py-3 text-center">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody class="text-sm divide-y divide-gray-100">
+                        <tr th:each="u : ${allUsers}" class="hover:bg-gray-50">
+                            <td class="px-6 py-3 text-gray-500 text-xs font-mono" th:text="${u.id}"></td>
+                            <td class="px-6 py-3 font-medium text-gray-900" th:text="${u.fullName}"></td>
+                            <td class="px-6 py-3 text-gray-600" th:text="${u.email}"></td>
+                            <td class="px-6 py-3">
+                                <span th:if="${u.role == 'ADMIN'}"
+                                    class="bg-red-100 text-red-700 text-[10px] px-2 py-0.5 rounded font-bold">Admin</span>
+                                <span th:if="${u.role == 'PROJECT_MANAGER'}"
+                                    class="bg-indigo-100 text-indigo-700 text-[10px] px-2 py-0.5 rounded font-bold">Project
+                                    Manager</span>
+                                <span th:if="${u.role == 'ENGINEER'}"
+                                    class="bg-orange-100 text-orange-700 text-[10px] px-2 py-0.5 rounded font-bold">Engineer</span>
+                                <span th:if="${u.role == 'CONTRACTOR'}"
+                                    class="bg-emerald-100 text-emerald-700 text-[10px] px-2 py-0.5 rounded font-bold">Contractor</span>
+                                <span th:if="${u.role == 'CLIENT'}"
+                                    class="bg-purple-100 text-purple-700 text-[10px] px-2 py-0.5 rounded font-bold">Client</span>
+                            </td>
+                            <td class="px-6 py-3 text-center">
+                                <form action="/admin/users/update-role" method="POST"
+                                    class="flex items-center justify-center gap-2">
+                                    <input type="hidden" name="userId" th:value="${u.id}">
+                                    <select name="newRole"
+                                        class="border border-gray-300 rounded-md px-2 py-1 text-xs bg-gray-50 focus:ring-2 focus:ring-brand-500 outline-none">
+                                        <option value="ADMIN" th:selected="${u.role == 'ADMIN'}">Admin</option>
+                                        <option value="PROJECT_MANAGER" th:selected="${u.role == 'PROJECT_MANAGER'}">
+                                            Project Manager</option>
+                                        <option value="ENGINEER" th:selected="${u.role == 'ENGINEER'}">Engineer
+                                        </option>
+                                        <option value="CONTRACTOR" th:selected="${u.role == 'CONTRACTOR'}">Contractor
+                                        </option>
+                                        <option value="CLIENT" th:selected="${u.role == 'CLIENT'}">Client</option>
+                                    </select>
+                                    <button type="submit"
+                                        class="bg-brand-600 hover:bg-brand-700 text-white px-2 py-1 rounded text-xs transition-colors">
+                                        <i class="fa-solid fa-arrow-right-arrow-left"></i></button>
+                                </form>
+                            </td>
+                            <td class="px-6 py-3 text-center">
+                                <form action="/admin/users/delete" method="POST"
+                                    onsubmit="return confirm('Delete this user?')" style="display:inline">
+                                    <input type="hidden" name="userId" th:value="${u.id}">
+                                    <button type="submit" class="text-red-500 hover:text-red-700 text-xs"><i
+                                            class="fa-solid fa-trash"></i></button>
+                                </form>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+</body>
+
+</html>

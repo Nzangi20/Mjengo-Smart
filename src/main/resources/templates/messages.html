@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/base :: head(${title})}"></head>
+
+<body class="bg-gray-50 flex h-screen overflow-hidden text-gray-800">
+    <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+    <div class="flex-1 flex flex-col relative w-full h-full">
+        <div th:replace="~{fragments/navbar :: navbar}"></div>
+        <main class="flex-1 overflow-y-auto p-6 lg:p-8">
+
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+                <div>
+                    <h1 class="text-2xl font-bold text-gray-900"><i
+                            class="fa-solid fa-comments text-brand-500 mr-2"></i>Messages</h1>
+                    <p class="text-sm text-gray-500 mt-1">Project channels (everyone on the project) or direct messages
+                        (one person).</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-4 gap-6" style="height: calc(100vh - 200px);">
+
+                <!-- Sidebar: projects + people -->
+                <div class="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden flex flex-col">
+                    <div class="p-3 border-b border-gray-100 bg-gray-50">
+                        <h2 class="font-bold text-gray-900 text-xs uppercase tracking-wide"><i
+                                class="fa-solid fa-building text-brand-500 mr-1"></i>Project channels</h2>
+                        <p class="text-[10px] text-gray-500 mt-0.5">Visible to all users in the room</p>
+                    </div>
+                    <div class="max-h-48 overflow-y-auto border-b border-gray-100">
+                        <div th:if="${projects.isEmpty()}" class="p-4 text-center text-gray-400 text-xs">
+                            No projects
+                        </div>
+                        <a th:each="p : ${projects}" th:href="@{/messages(project=${p.id})}"
+                            th:classappend="${chatMode == 'PROJECT' and selectedProject != null and selectedProject == #strings.toString(p.id)} ? 'bg-brand-50 border-l-4 border-brand-500' : 'hover:bg-gray-50'"
+                            class="block px-4 py-2.5 border-b border-gray-50 transition-colors">
+                            <p class="text-sm font-medium text-gray-900" th:text="${p.name}"></p>
+                            <p class="text-[10px] text-gray-500" th:text="${p.location}"></p>
+                        </a>
+                    </div>
+                    <div class="p-3 border-b border-gray-100 bg-gray-50">
+                        <h2 class="font-bold text-gray-900 text-xs uppercase tracking-wide"><i
+                                class="fa-solid fa-user text-brand-500 mr-1"></i>Direct messages</h2>
+                        <p class="text-[10px] text-gray-500 mt-0.5">Private chat with one user</p>
+                    </div>
+                    <div class="flex-1 overflow-y-auto min-h-0">
+                        <div th:if="${directoryUsers.isEmpty()}" class="p-4 text-center text-gray-400 text-xs">
+                            No other users registered
+                        </div>
+                        <a th:each="u : ${directoryUsers}" th:href="@{/messages(dm=${u.id})}"
+                            th:classappend="${chatMode == 'DIRECT' and selectedPeer != null and selectedPeer.id == u.id} ? 'bg-brand-50 border-l-4 border-brand-500' : 'hover:bg-gray-50'"
+                            class="block px-4 py-2.5 border-b border-gray-50 transition-colors">
+                            <p class="text-sm font-medium text-gray-900" th:text="${u.fullName}"></p>
+                            <p class="text-[10px] text-gray-500 truncate" th:text="${u.email}"></p>
+                            <span
+                                class="inline-block mt-0.5 text-[9px] px-1.5 py-0 rounded font-bold uppercase bg-gray-100 text-gray-600"
+                                th:text="${u.role}"></span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Chat Area -->
+                <div
+                    class="lg:col-span-3 bg-white rounded-xl border border-gray-100 shadow-sm flex flex-col overflow-hidden">
+
+                    <div th:if="${chatMode == null}"
+                        class="flex-1 flex items-center justify-center text-center p-12">
+                        <div>
+                            <div
+                                class="bg-brand-50 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <i class="fa-solid fa-comments text-brand-500 text-3xl"></i>
+                            </div>
+                            <h3 class="text-lg font-bold text-gray-900 mb-2">Choose a conversation</h3>
+                            <p class="text-sm text-gray-500 max-w-md">Open a <strong>project channel</strong> to chat
+                                with everyone on that project, or pick a <strong>user</strong> under Direct messages for
+                                a private thread.</p>
+                        </div>
+                    </div>
+
+                    <div th:if="${chatMode != null}" class="flex flex-col h-full">
+                        <!-- Chat Header -->
+                        <div class="px-5 py-3 border-b border-gray-100 bg-gray-50 flex items-center justify-between gap-3">
+                            <div class="flex items-center gap-3">
+                                <div class="bg-brand-100 p-2 rounded-lg"
+                                    th:classappend="${chatMode == 'DIRECT'} ? 'bg-violet-100' : ''"><i
+                                        th:class="${chatMode == 'DIRECT'} ? 'fa-solid fa-user text-violet-600 text-sm' : 'fa-solid fa-building text-brand-600 text-sm'"></i>
+                                </div>
+                                <div>
+                                    <h3 class="font-bold text-gray-900 text-sm" th:if="${chatMode == 'PROJECT'}">Project
+                                        channel</h3>
+                                    <h3 class="font-bold text-gray-900 text-sm" th:if="${chatMode == 'DIRECT'}">Direct
+                                        message</h3>
+                                    <p class="text-xs text-gray-500" th:if="${chatMode == 'PROJECT'}">Project #<span
+                                            th:text="${selectedProject}"></span> — all participants see these messages
+                                    </p>
+                                    <p class="text-xs text-gray-500" th:if="${chatMode == 'DIRECT' and selectedPeer != null}">
+                                        <span th:text="${selectedPeer.fullName}"></span>
+                                    </p>
+                                </div>
+                            </div>
+                            <span th:if="${session.userRole != null}"
+                                class="text-[10px] px-2 py-0.5 rounded bg-gray-100 text-gray-600 font-bold uppercase"
+                                th:text="${session.userRole}"></span>
+                        </div>
+
+                        <!-- Messages -->
+                        <div class="flex-1 overflow-y-auto p-5 space-y-4" id="chatMessages">
+                            <div th:if="${messages == null or messages.isEmpty()}"
+                                class="text-center py-12 text-gray-400">
+                                <i class="fa-regular fa-comment-dots text-4xl mb-3 block"></i>
+                                <p class="text-sm">No messages yet. Start the conversation!</p>
+                            </div>
+                            <div th:each="m : ${messages}" class="flex items-start gap-3">
+                                <img th:src="'https://ui-avatars.com/api/?name=' + ${m.senderName} + '&background=0284c7&color=fff&size=32'"
+                                    class="w-8 h-8 rounded-full flex-shrink-0 mt-0.5">
+                                <div class="flex-1">
+                                    <div class="flex items-center gap-2 mb-1">
+                                        <span class="text-sm font-semibold text-gray-900"
+                                            th:text="${m.senderName}"></span>
+                                        <span
+                                            th:classappend="${m.senderRole == 'ADMIN'} ? 'bg-red-100 text-red-700' : (${m.senderRole == 'PROJECT_MANAGER'} ? 'bg-indigo-100 text-indigo-700' : (${m.senderRole == 'ENGINEER'} ? 'bg-orange-100 text-orange-700' : (${m.senderRole == 'CONTRACTOR'} ? 'bg-emerald-100 text-emerald-700' : 'bg-purple-100 text-purple-700')))"
+                                            class="text-[9px] px-1.5 py-0.5 rounded font-bold uppercase"
+                                            th:text="${m.senderRole}"></span>
+                                        <span class="text-[10px] text-gray-400" th:text="${m.timestamp}"></span>
+                                    </div>
+                                    <div class="bg-gray-50 rounded-lg rounded-tl-none px-4 py-2.5">
+                                        <p class="text-sm text-gray-700" th:text="${m.content}"></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Send Form -->
+                        <div class="p-4 border-t border-gray-100 bg-white">
+                            <form action="/messages/send" method="POST" class="flex gap-3" id="chatForm">
+                                <input type="hidden" name="chatMode" th:value="${chatMode}">
+                                <input type="hidden" name="projectId" th:if="${chatMode == 'PROJECT'}"
+                                    th:value="${selectedProject}">
+                                <input type="hidden" name="peerUserId" th:if="${chatMode == 'DIRECT' and selectedPeer != null}"
+                                    th:value="${selectedPeer.id}">
+                                <input type="text" name="content" id="chatContent" placeholder="Type your message..."
+                                    required autocomplete="off"
+                                    class="flex-1 border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-brand-500 outline-none bg-gray-50 focus:bg-white transition-colors">
+                                <button type="submit"
+                                    class="bg-brand-600 hover:bg-brand-700 text-white px-5 py-2.5 rounded-lg text-sm font-medium transition-colors flex items-center gap-2">
+                                    <i class="fa-solid fa-paper-plane"></i> Send
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1.6.1/dist/sockjs.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
+    <script th:inline="javascript" th:if="${wsDestination != null}">
+        /*<![CDATA[*/
+        const wsDestination = /*[[${wsDestination}]]*/ '';
+        const chatDiv = document.getElementById('chatMessages');
+        if (chatDiv) chatDiv.scrollTop = chatDiv.scrollHeight;
+
+        const socket = new SockJS('/ws');
+        const stompClient = Stomp.over(socket);
+        stompClient.debug = null;
+        stompClient.connect({}, function () {
+            stompClient.subscribe(wsDestination, function (message) {
+                const dto = JSON.parse(message.body);
+                appendMessage(dto);
+            });
+        });
+
+        function appendMessage(dto) {
+            if (!chatDiv) return;
+            const wrap = document.createElement('div');
+            wrap.className = 'flex items-start gap-3';
+            wrap.innerHTML = `
+                <img src="https://ui-avatars.com/api/?name=${encodeURIComponent(dto.senderName)}&background=0284c7&color=fff&size=32" class="w-8 h-8 rounded-full flex-shrink-0 mt-0.5">
+                <div class="flex-1">
+                    <div class="flex items-center gap-2 mb-1">
+                        <span class="text-sm font-semibold text-gray-900">${escapeHtml(dto.senderName)}</span>
+                        <span class="text-[9px] px-1.5 py-0.5 rounded font-bold uppercase bg-gray-100 text-gray-700">${escapeHtml(dto.senderRole)}</span>
+                        <span class="text-[10px] text-gray-400">${escapeHtml(dto.timestamp)}</span>
+                    </div>
+                    <div class="bg-gray-50 rounded-lg rounded-tl-none px-4 py-2.5">
+                        <p class="text-sm text-gray-700">${escapeHtml(dto.content)}</p>
+                    </div>
+                </div>`;
+            chatDiv.appendChild(wrap);
+            chatDiv.scrollTop = chatDiv.scrollHeight;
+        }
+
+        function escapeHtml(s) {
+            if (!s) return '';
+            const d = document.createElement('div');
+            d.textContent = s;
+            return d.innerHTML;
+        }
+        /*]]>*/
+    </script>
+</body>
+
+</html>

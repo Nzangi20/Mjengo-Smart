@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/base :: head(${title})}"></head>
+
+<body class="bg-gray-50 flex h-screen overflow-hidden text-gray-800">
+    <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+    <div class="flex-1 flex flex-col relative w-full h-full">
+        <div th:replace="~{fragments/navbar :: navbar}"></div>
+        <main class="flex-1 overflow-y-auto p-6 lg:p-8">
+
+            <div class="mb-6 bg-brand-50 border border-brand-100 text-brand-900 text-sm px-4 py-3 rounded-lg">
+                <i class="fa-solid fa-diagram-project mr-2"></i> Submitting this form runs the <strong>same site
+                    suitability engine</strong> as Site Analysis, links the result to your selected project, and
+                notifies stakeholders.
+            </div>
+
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+                <div>
+                    <h1 class="text-2xl font-bold text-gray-900" th:text="${title}">Site Survey</h1>
+                    <p class="text-sm text-gray-500 mt-1">Engineer field data — soil, slope, flood, access, utilities,
+                        GPS.</p>
+                </div>
+                <a href="/site-analysis"
+                    class="text-sm text-brand-600 hover:text-brand-800 font-medium">Open full analysis view →</a>
+            </div>
+
+            <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-6">
+                <h2 class="font-bold text-gray-900 mb-4"><i class="fa-solid fa-clipboard-check text-indigo-500 mr-2"></i>
+                    Submit survey &amp; run analysis</h2>
+                <form action="/site-analysis/analyze" method="POST"
+                    class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div class="lg:col-span-2">
+                        <label class="block text-xs font-semibold text-gray-700 mb-1">Project *</label>
+                        <select name="projectId" required th:disabled="${projects.isEmpty()}"
+                            class="w-full border border-gray-300 rounded-lg px-4 py-2 text-sm focus:ring-2 focus:ring-brand-500 outline-none bg-gray-50 appearance-none">
+                            <option th:each="p : ${projects}" th:value="${p.id}"
+                                th:text="${p.name} + ' — ' + ${p.location}"></option>
+                        </select>
+                        <p th:if="${projects.isEmpty()}" class="text-xs text-red-600 mt-1">Create a project first.</p>
+                    </div>
+                    <div class="lg:col-span-2">
+                        <label class="block text-xs font-semibold text-gray-700 mb-1">Site name *</label>
+                        <input type="text" name="siteName" required placeholder="Plot / site label"
+                            class="w-full border border-gray-300 rounded-lg px-4 py-2 text-sm focus:ring-2 focus:ring-brand-500 outline-none bg-gray-50">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-700 mb-1">Soil type</label>
+                        <select name="soilType" required
+                            class="w-full border border-gray-300 rounded-lg px-4 py-2 text-sm focus:ring-2 focus:ring-brand-500 outline-none bg-gray-50 appearance-none">
+                            <option value="ROCK">Rock</option>
+                            <option value="SANDY">Sandy</option>
+                            <option value="LOAM">Loam</option>
+                            <option value="CLAY" selected>Clay</option>
+                            <option value="SILT">Silt</option>
+                            <option value="PEAT">Peat</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-700 mb-1">Slope (°)</label>
+                        <input type="number" name="slopeAngle" value="5" min="0" max="45" step="0.5" required
+                            class="w-full border border-gray-300 rounded-lg px-4 py-2 text-sm focus:ring-2 focus:ring-brand-500 outline-none bg-gray-50">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-700 mb-1">Flood risk</label>
+                        <select name="floodRisk" required
+                            class="w-full border border-gray-300 rounded-lg px-4 py-2 text-sm focus:ring-2 focus:ring-brand-500 outline-none bg-gray-50 appearance-none">
+                            <option value="LOW">Low</option>
+                            <option value="MODERATE">Moderate</option>
+                            <option value="HIGH">High</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-700 mb-1">Road access</label>
+                        <select name="accessibility" required
+                            class="w-full border border-gray-300 rounded-lg px-4 py-2 text-sm focus:ring-2 focus:ring-brand-500 outline-none bg-gray-50 appearance-none">
+                            <option value="EXCELLENT">Excellent</option>
+                            <option value="GOOD" selected>Good</option>
+                            <option value="FAIR">Fair</option>
+                            <option value="POOR">Poor</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-700 mb-1">Utilities</label>
+                        <select name="utilitiesRating" required
+                            class="w-full border border-gray-300 rounded-lg px-4 py-2 text-sm focus:ring-2 focus:ring-brand-500 outline-none bg-gray-50 appearance-none">
+                            <option value="EXCELLENT">Excellent</option>
+                            <option value="GOOD" selected>Good</option>
+                            <option value="FAIR">Fair</option>
+                            <option value="POOR">Poor</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-700 mb-1">Water table</label>
+                        <select name="waterTable" required
+                            class="w-full border border-gray-300 rounded-lg px-4 py-2 text-sm focus:ring-2 focus:ring-brand-500 outline-none bg-gray-50 appearance-none">
+                            <option value="DEEP">Deep</option>
+                            <option value="MODERATE" selected>Moderate</option>
+                            <option value="SHALLOW">Shallow</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-700 mb-1">Seismic zone</label>
+                        <select name="seismicZone" required
+                            class="w-full border border-gray-300 rounded-lg px-4 py-2 text-sm focus:ring-2 focus:ring-brand-500 outline-none bg-gray-50 appearance-none">
+                            <option value="LOW" selected>Low</option>
+                            <option value="MODERATE">Moderate</option>
+                            <option value="HIGH">High</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-700 mb-1">Latitude</label>
+                        <input type="number" name="latitude" step="any" value="-1.2921"
+                            class="w-full border border-gray-300 rounded-lg px-4 py-2 text-sm focus:ring-2 focus:ring-brand-500 outline-none bg-gray-50">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-700 mb-1">Longitude</label>
+                        <input type="number" name="longitude" step="any" value="36.8219"
+                            class="w-full border border-gray-300 rounded-lg px-4 py-2 text-sm focus:ring-2 focus:ring-brand-500 outline-none bg-gray-50">
+                    </div>
+                    <div class="lg:col-span-4 flex items-end">
+                        <button type="submit"
+                            class="bg-brand-600 hover:bg-brand-700 text-white rounded-lg px-6 py-2.5 text-sm font-medium transition-colors flex items-center gap-2">
+                            <i class="fa-solid fa-microscope"></i> Run suitability analysis
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </main>
+    </div>
+</body>
+
+</html>
