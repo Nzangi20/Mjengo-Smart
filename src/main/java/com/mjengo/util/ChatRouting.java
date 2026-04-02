@@ -48,6 +48,31 @@ public final class ChatRouting {
         return "/topic/project." + channelKey;
     }
 
+    /**
+     * Decode a direct-message STOMP destination back into the canonical channel key.
+     * Example: "/topic/dm.{base64url(DM:a|b)}" -> "DM:a|b"
+     */
+    public static String directChannelKeyFromStompDestination(String stompDestination) {
+        if (stompDestination == null) {
+            return "";
+        }
+        String prefix = "/topic/dm.";
+        if (!stompDestination.startsWith(prefix)) {
+            return "";
+        }
+        String enc = stompDestination.substring(prefix.length()).trim();
+        if (enc.isEmpty()) {
+            return "";
+        }
+        try {
+            byte[] bytes = Base64.getUrlDecoder().decode(enc);
+            String decoded = new String(bytes, StandardCharsets.UTF_8);
+            return decoded;
+        } catch (IllegalArgumentException ex) {
+            return "";
+        }
+    }
+
     private static String normalizeEmail(String e) {
         return e == null ? "" : e.trim().toLowerCase();
     }
