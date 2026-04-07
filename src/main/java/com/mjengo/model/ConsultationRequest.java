@@ -113,4 +113,8 @@ public class ConsultationRequest {
     public void setCreatedAt(String createdAt) {
         this.createdAt = createdAt;
     }
+
+    public static void syncIdGenerator(long nextId) {
+        ID_GEN.set(Math.max(1, nextId));
+    }
 }

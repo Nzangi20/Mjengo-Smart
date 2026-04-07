@@ -17,6 +17,13 @@ import java.util.stream.Collectors;
 public class NotificationService {
 
     private final List<Notification> notifications = new ArrayList<>();
+    private final PersistentStoreService store;
+
+    public NotificationService(PersistentStoreService store) {
+        this.store = store;
+        notifications.addAll(store.loadList("notifications", Notification.class));
+        Notification.syncIdGenerator(notifications.stream().map(Notification::getId).max(Long::compareTo).orElse(0L) + 1L);
+    }
 
     /**
      * Create a notification for a user.
@@ -24,6 +31,7 @@ public class NotificationService {
     public void notify(String userEmail, String type, String message, String link) {
         String ts = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
         notifications.add(new Notification(userEmail, type, message, link, ts));
+        save();
     }
 
     /**
@@ -32,6 +40,7 @@ public class NotificationService {
     public void broadcast(String type, String message, String link) {
         String ts = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
         notifications.add(new Notification("ALL", type, message, link, ts));
+        save();
     }
 
     /**
@@ -70,7 +79,10 @@ public class NotificationService {
         notifications.stream()
                 .filter(n -> n.getId() == notifId)
                 .findFirst()
-                .ifPresent(n -> n.setRead(true));
+                .ifPresent(n -> {
+                    n.setRead(true);
+                    save();
+                });
     }
 
     /**
@@ -80,5 +92,10 @@ public class NotificationService {
         notifications.stream()
                 .filter(n -> "ALL".equals(n.getUserId()) || n.getUserId().equals(userEmail))
                 .forEach(n -> n.setRead(true));
+        save();
+    }
+
+    private void save() {
+        store.saveList("notifications", notifications);
     }
 }

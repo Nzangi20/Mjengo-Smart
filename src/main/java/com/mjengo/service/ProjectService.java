@@ -12,6 +12,13 @@ import java.util.concurrent.atomic.AtomicLong;
 public class ProjectService {
     private final List<Project> projects = new ArrayList<>();
     private final AtomicLong idCounter = new AtomicLong(1);
+    private final PersistentStoreService store;
+
+    public ProjectService(PersistentStoreService store) {
+        this.store = store;
+        projects.addAll(store.loadList("projects", Project.class));
+        idCounter.set(projects.stream().map(Project::getId).max(Long::compareTo).orElse(0L) + 1L);
+    }
 
     public List<Project> getAll() {
         return projects;
@@ -24,11 +31,13 @@ public class ProjectService {
     public Project add(Project project) {
         project.setId(idCounter.getAndIncrement());
         projects.add(project);
+        save();
         return project;
     }
 
     public void delete(long id) {
         projects.removeIf(p -> p.getId() == id);
+        save();
     }
 
     public int countByStatus(String status) {
@@ -45,10 +54,12 @@ public class ProjectService {
 
     public void linkSiteAnalysis(long projectId, long analysisId) {
         getById(projectId).ifPresent(p -> p.setSiteAnalysisResultId(analysisId));
+        save();
     }
 
     public void linkCostEstimate(long projectId, long estimateId) {
         getById(projectId).ifPresent(p -> p.setCostEstimateId(estimateId));
+        save();
     }
 
     public List<Project> findByClientEmail(String email) {
@@ -91,6 +102,11 @@ public class ProjectService {
                 return false;
             }
         }
+        save();
         return true;
+    }
+
+    private void save() {
+        store.saveList("projects", projects);
     }
 }

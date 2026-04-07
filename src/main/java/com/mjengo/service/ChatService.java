@@ -14,9 +14,17 @@ import java.util.stream.Collectors;
 public class ChatService {
 
     private final List<ChatMessage> messages = new ArrayList<>();
+    private final PersistentStoreService store;
+
+    public ChatService(PersistentStoreService store) {
+        this.store = store;
+        messages.addAll(store.loadList("chat_messages", ChatMessage.class));
+        ChatMessage.syncIdGenerator(messages.stream().map(ChatMessage::getId).max(Long::compareTo).orElse(0L) + 1L);
+    }
 
     public void send(ChatMessage message) {
         messages.add(message);
+        save();
     }
 
     public List<ChatMessage> getByProject(String projectId) {
@@ -43,5 +51,9 @@ public class ChatService {
                 .filter(id -> id != null && !id.startsWith("DM:"))
                 .distinct()
                 .collect(Collectors.toList());
+    }
+
+    private void save() {
+        store.saveList("chat_messages", messages);
     }
 }

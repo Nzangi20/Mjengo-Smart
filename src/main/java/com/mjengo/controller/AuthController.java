@@ -70,6 +70,10 @@ public class AuthController {
             @RequestParam("role") String role,
             HttpSession session,
             RedirectAttributes redirectAttributes) {
+        if ("ADMIN".equalsIgnoreCase(role)) {
+            redirectAttributes.addFlashAttribute("error", "Admin account is managed by the system.");
+            return "redirect:/register";
+        }
         User newUser = new User(fullName, email, password, role.toUpperCase());
         boolean success = userService.register(newUser);
         if (success) {

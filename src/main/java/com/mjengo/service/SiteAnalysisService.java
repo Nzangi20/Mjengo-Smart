@@ -27,9 +27,13 @@ public class SiteAnalysisService {
     private static final AtomicLong ID_GEN = new AtomicLong(1);
     private final List<SiteAnalysisResult> results = new ArrayList<>();
     private final ProjectService projectService;
+    private final PersistentStoreService store;
 
-    public SiteAnalysisService(ProjectService projectService) {
+    public SiteAnalysisService(ProjectService projectService, PersistentStoreService store) {
         this.projectService = projectService;
+        this.store = store;
+        results.addAll(store.loadList("site_analyses", SiteAnalysisResult.class));
+        ID_GEN.set(results.stream().map(SiteAnalysisResult::getId).max(Long::compareTo).orElse(0L) + 1L);
     }
 
     /**
@@ -160,6 +164,7 @@ public class SiteAnalysisService {
         }
 
         results.add(result);
+        save();
         return result;
     }
 
@@ -330,5 +335,9 @@ public class SiteAnalysisService {
             default:
                 return 10;
         }
+    }
+
+    private void save() {
+        store.saveList("site_analyses", results);
     }
 }

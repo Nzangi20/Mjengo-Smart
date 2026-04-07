@@ -86,4 +86,8 @@ public class Notification {
     public void setTimestamp(String timestamp) {
         this.timestamp = timestamp;
     }
+
+    public static void syncIdGenerator(long nextId) {
+        ID_GEN.set(Math.max(1, nextId));
+    }
 }

@@ -12,6 +12,13 @@ import java.util.concurrent.atomic.AtomicLong;
 public class TransactionService {
     private final List<Transaction> transactions = new ArrayList<>();
     private final AtomicLong idCounter = new AtomicLong(1);
+    private final PersistentStoreService store;
+
+    public TransactionService(PersistentStoreService store) {
+        this.store = store;
+        transactions.addAll(store.loadList("transactions", Transaction.class));
+        idCounter.set(transactions.stream().map(Transaction::getId).max(Long::compareTo).orElse(0L) + 1L);
+    }
 
     public List<Transaction> getAll() {
         return transactions;
@@ -24,11 +31,13 @@ public class TransactionService {
     public Transaction add(Transaction t) {
         t.setId(idCounter.getAndIncrement());
         transactions.add(t);
+        save();
         return t;
     }
 
     public void delete(long id) {
         transactions.removeIf(t -> t.getId() == id);
+        save();
     }
 
     public double totalAmount() {
@@ -38,5 +47,9 @@ public class TransactionService {
     public double totalByStatus(String status) {
         return transactions.stream().filter(t -> t.getStatus().equals(status)).mapToDouble(Transaction::getAmount)
                 .sum();
+    }
+
+    private void save() {
+        store.saveList("transactions", transactions);
     }
 }

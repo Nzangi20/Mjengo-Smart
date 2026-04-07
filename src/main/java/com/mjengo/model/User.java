@@ -68,4 +68,8 @@ public class User {
     public void setRole(String role) {
         this.role = role;
     }
+
+    public static void syncIdGenerator(long nextId) {
+        ID_GEN.set(Math.max(1, nextId));
+    }
 }

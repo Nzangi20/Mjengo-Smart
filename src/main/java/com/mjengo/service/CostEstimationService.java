@@ -24,10 +24,15 @@ public class CostEstimationService {
     private final List<CostEstimate> estimates = new ArrayList<>();
     private final ProjectService projectService;
     private final SiteAnalysisService siteAnalysisService;
+    private final PersistentStoreService store;
 
-    public CostEstimationService(ProjectService projectService, SiteAnalysisService siteAnalysisService) {
+    public CostEstimationService(ProjectService projectService, SiteAnalysisService siteAnalysisService,
+            PersistentStoreService store) {
         this.projectService = projectService;
         this.siteAnalysisService = siteAnalysisService;
+        this.store = store;
+        estimates.addAll(store.loadList("cost_estimates", CostEstimate.class));
+        ID_GEN.set(estimates.stream().map(CostEstimate::getId).max(Long::compareTo).orElse(0L) + 1L);
     }
 
     // Regional cost multipliers (base = Nairobi = 1.0)
@@ -180,6 +185,7 @@ public class CostEstimationService {
         }
 
         estimates.add(est);
+        save();
         if (linkedProjectId != null && linkedProjectId > 0) {
             projectService.linkCostEstimate(linkedProjectId, est.getId());
         }
@@ -245,5 +251,9 @@ public class CostEstimationService {
                 .filter(e -> isVisibleToClient(e, clientEmail))
                 .sorted(Comparator.comparingLong(CostEstimate::getId).reversed())
                 .toList();
+    }
+
+    private void save() {
+        store.saveList("cost_estimates", estimates);
     }
 }
